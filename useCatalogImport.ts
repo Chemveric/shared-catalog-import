@@ -207,6 +207,9 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
   const previewHeaders = useCallback(
     async (fileId: string): Promise<HeaderPreviewResponse | null> => {
       try {
+        console.log('[IMPORT_DEBUG] previewHeaders called for fileId:', fileId);
+        console.log('[IMPORT_DEBUG] previewHeaders URL:', apiConfig.previewHeadersUrl);
+        console.log('[IMPORT_DEBUG] previewHeaders organizationId:', organizationId);
         const response = await fetch(apiConfig.previewHeadersUrl, {
           method: 'POST',
           headers: {
@@ -215,8 +218,10 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
           credentials: 'include',
           body: JSON.stringify({
             fileId,
+            organizationId,
           }),
         });
+        console.log('[IMPORT_DEBUG] previewHeaders response status:', response.status);
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({
@@ -230,12 +235,13 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
         return data;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to preview headers';
+        console.error('[IMPORT_DEBUG] previewHeaders exception:', err);
         setError(errorMessage);
 
         return null;
       }
     },
-    [apiConfig],
+    [apiConfig, organizationId],
   );
 
   const reset = useCallback(() => {
