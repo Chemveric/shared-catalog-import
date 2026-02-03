@@ -69,6 +69,8 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
   const getStatus = useCallback(
     async (jobId: string) => {
       try {
+        console.log('[IMPORT_DEBUG] getStatus called for jobId:', jobId);
+        console.log('[IMPORT_DEBUG] getStatus URL:', apiConfig.getStatusUrl(jobId));
         const response = await fetch(apiConfig.getStatusUrl(jobId), {
           method: 'GET',
           headers: {
@@ -77,19 +79,24 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
           credentials: 'include',
         });
 
+        console.log('[IMPORT_DEBUG] getStatus response status:', response.status);
+
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({
             message: 'Failed to get import status',
           }));
+          console.log('[IMPORT_DEBUG] getStatus error:', errorData);
           throw new Error(errorData.message || 'Failed to get import status');
         }
 
         const data = await response.json();
+        console.log('[IMPORT_DEBUG] getStatus response data:', JSON.stringify(data, null, 2));
         setStatus(data);
 
         return data;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to get import status';
+        console.error('[IMPORT_DEBUG] getStatus exception:', err);
         setError(errorMessage);
         throw err;
       }
@@ -130,6 +137,10 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
           requestBody.defaultPlateId = params.defaultPlateId;
         }
 
+        console.log('[IMPORT_DEBUG] startImport called');
+        console.log('[IMPORT_DEBUG] startImport URL:', apiConfig.startImportUrl);
+        console.log('[IMPORT_DEBUG] startImport requestBody:', JSON.stringify(requestBody, null, 2));
+
         const response = await fetch(apiConfig.startImportUrl, {
           method: 'POST',
           headers: {
@@ -139,22 +150,29 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
           body: JSON.stringify(requestBody),
         });
 
+        console.log('[IMPORT_DEBUG] startImport response status:', response.status);
+
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({
             message: 'Failed to start catalog import',
           }));
+          console.log('[IMPORT_DEBUG] startImport error response:', errorData);
           throw new Error(errorData.message || 'Failed to start catalog import');
         }
 
         const data = await response.json();
+        console.log('[IMPORT_DEBUG] startImport success response:', JSON.stringify(data, null, 2));
+        console.log('[IMPORT_DEBUG] jobId received:', data.jobId);
         jobIdRef.current = data.jobId;
 
         // Immediately fetch initial status
+        console.log('[IMPORT_DEBUG] Fetching initial status for jobId:', data.jobId);
         await getStatus(data.jobId);
 
         return data.jobId;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to start catalog import';
+        console.error('[IMPORT_DEBUG] startImport exception:', err);
         setError(errorMessage);
         throw err;
       } finally {
