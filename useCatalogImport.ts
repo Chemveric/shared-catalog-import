@@ -227,6 +227,7 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
           const errorData = await response.json().catch(() => ({
             message: 'Failed to preview headers',
           }));
+          console.error('[IMPORT_DEBUG] previewHeaders error response body:', JSON.stringify(errorData, null, 2));
           throw new Error(errorData.message || 'Failed to preview headers');
         }
 
