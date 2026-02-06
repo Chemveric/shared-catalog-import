@@ -192,6 +192,31 @@ function autoDetectMapping(
       return 'targetName';
     }
 
+    // Pathway patterns
+    if (lower === 'pathway') {
+      return 'pathway';
+    }
+
+    // Description patterns
+    if (lower === 'short_description' || lower === 'description') {
+      return 'description';
+    }
+
+    // Molecule type patterns
+    if (lower === 'type_of_molecule') {
+      return 'moleculeType';
+    }
+
+    // Alias patterns
+    if (lower === 'alias') {
+      return 'alias';
+    }
+
+    // Mechanism of action patterns
+    if (lower === 'mechanism_of_action' || lower === 'mechanism') {
+      return 'mechanismOfAction';
+    }
+
     // Concentration patterns
     if (lower === 'concentration' || lower === 'conc') {
       return 'concentration';

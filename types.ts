@@ -57,6 +57,11 @@ export type ColumnMappingKind =
   | 'libraryName'
   | 'libraryId'
   | 'targetName'
+  | 'pathway'
+  | 'description'
+  | 'moleculeType'
+  | 'alias'
+  | 'mechanismOfAction'
   // Supply and handling
   | 'concentration'
   | 'volume'
@@ -217,6 +222,11 @@ export const MAPPING_LABELS: Record<ColumnMappingKind, string> = {
   libraryName: 'Library Name',
   libraryId: 'Library ID',
   targetName: 'Target Name',
+  pathway: 'Pathway',
+  description: 'Description',
+  moleculeType: 'Molecule Type',
+  alias: 'Alias',
+  mechanismOfAction: 'Mechanism of Action',
   // Structure
   smiles: 'SMILES',
   mdl: 'MDL/Molfile',
@@ -307,7 +317,7 @@ export const SCREENING_COMPOUND_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: 'Library & Kit Metadata',
-    options: ['libraryName', 'libraryId', 'targetName'],
+    options: ['libraryName', 'libraryId', 'targetName', 'pathway', 'description', 'moleculeType', 'alias', 'mechanismOfAction'],
   },
   {
     group: 'PhysChem & Salt',
