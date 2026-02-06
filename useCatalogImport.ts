@@ -286,7 +286,6 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
         try {
           await getStatus(currentJobId);
         } catch (err) {
-          // eslint-disable-next-line no-console
           console.error('Error polling catalog import status:', err);
         }
       }, 2000);
