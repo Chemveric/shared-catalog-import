@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   CatalogImportMode,
@@ -139,7 +140,10 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
 
         console.log('[IMPORT_DEBUG] startImport called');
         console.log('[IMPORT_DEBUG] startImport URL:', apiConfig.startImportUrl);
-        console.log('[IMPORT_DEBUG] startImport requestBody:', JSON.stringify(requestBody, null, 2));
+        console.log(
+          '[IMPORT_DEBUG] startImport requestBody:',
+          JSON.stringify(requestBody, null, 2),
+        );
 
         const response = await fetch(apiConfig.startImportUrl, {
           method: 'POST',
@@ -227,7 +231,10 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
           const errorData = await response.json().catch(() => ({
             message: 'Failed to preview headers',
           }));
-          console.error('[IMPORT_DEBUG] previewHeaders error response body:', JSON.stringify(errorData, null, 2));
+          console.error(
+            '[IMPORT_DEBUG] previewHeaders error response body:',
+            JSON.stringify(errorData, null, 2),
+          );
           throw new Error(errorData.message || 'Failed to preview headers');
         }
 

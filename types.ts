@@ -317,7 +317,16 @@ export const SCREENING_COMPOUND_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: 'Library & Kit Metadata',
-    options: ['libraryName', 'libraryId', 'targetName', 'pathway', 'description', 'moleculeType', 'alias', 'mechanismOfAction'],
+    options: [
+      'libraryName',
+      'libraryId',
+      'targetName',
+      'pathway',
+      'description',
+      'moleculeType',
+      'alias',
+      'mechanismOfAction',
+    ],
   },
   {
     group: 'PhysChem & Salt',
