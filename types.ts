@@ -72,6 +72,8 @@ export type ColumnMappingKind =
   | 'batchId'
   | 'purity'
   | 'hazmat'
+  // Product metadata
+  | 'countryOfOrigin'
   // Warehouse fields (one warehouse per row)
   | 'warehouseCode'
   | 'warehouseName'
@@ -251,6 +253,8 @@ export const MAPPING_LABELS: Record<ColumnMappingKind, string> = {
   batchId: 'Batch ID',
   // Hazard & Operational
   hazmat: 'Hazmat (Yes/No)',
+  // Product Metadata
+  countryOfOrigin: 'Country of Origin',
   // Warehouse
   warehouseCode: 'Warehouse Code',
   warehouseName: 'Warehouse Name',
@@ -281,6 +285,10 @@ export const BUILDING_BLOCK_OPTIONS: MappingOptionGroup[] = [
   {
     group: 'Commercial',
     options: ['packageSize', 'unitPrice', 'inventoryAvailable', 'leadTime', 'hazmat'],
+  },
+  {
+    group: 'Product Metadata',
+    options: ['countryOfOrigin', 'storageConditions'],
   },
   {
     group: 'Warehouses',
