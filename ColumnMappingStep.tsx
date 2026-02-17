@@ -14,7 +14,7 @@ import {
   Typography,
   Alert,
   ListSubheader,
-} from '@mui/material';
+} from "@mui/material";
 import {
   CatalogImportKind,
   ColumnMapping,
@@ -25,7 +25,7 @@ import {
   MAPPING_LABELS,
   BUILDING_BLOCK_OPTIONS,
   SCREENING_COMPOUND_OPTIONS,
-} from './types';
+} from "./types";
 
 export interface ColumnMappingStepProps {
   columns: HeaderPreviewColumn[];
@@ -59,326 +59,347 @@ function autoDetectMapping(
 
   // BUILDING_BLOCK warehouse detection BEFORE generic inventory patterns
   // This ensures warehouse_stock_qty is not incorrectly mapped to inventoryAvailable
-  if (importKind === 'BUILDING_BLOCK') {
+  if (importKind === "BUILDING_BLOCK") {
     // Warehouse code - always check first
-    if (lower === 'warehouse_code' || lower === 'warehousecode') {
-      return 'warehouseCode';
+    if (lower === "warehouse_code" || lower === "warehousecode") {
+      return "warehouseCode";
     }
 
     // Warehouse name
-    if (lower === 'warehouse_name' || lower === 'warehousename') {
-      return 'warehouseName';
+    if (lower === "warehouse_name" || lower === "warehousename") {
+      return "warehouseName";
     }
 
     // Warehouse country
-    if (lower === 'warehouse_country' || lower === 'warehousecountry') {
-      return 'warehouseCountry';
+    if (lower === "warehouse_country" || lower === "warehousecountry") {
+      return "warehouseCountry";
     }
 
     // Warehouse city
-    if (lower === 'warehouse_city' || lower === 'warehousecity') {
-      return 'warehouseCity';
+    if (lower === "warehouse_city" || lower === "warehousecity") {
+      return "warehouseCity";
     }
 
     // Warehouse lead time
     if (
-      lower === 'warehouse_lead_time_days' ||
-      lower === 'warehouseleadtimedays' ||
-      lower === 'warehouse_lead_time'
+      lower === "warehouse_lead_time_days" ||
+      lower === "warehouseleadtimedays" ||
+      lower === "warehouse_lead_time"
     ) {
-      return 'warehouseLeadTimeDays';
+      return "warehouseLeadTimeDays";
     }
 
     // Warehouse in stock
     if (
-      lower === 'warehouse_in_stock' ||
-      lower === 'warehouseinstock' ||
-      lower === 'warehouse_instock'
+      lower === "warehouse_in_stock" ||
+      lower === "warehouseinstock" ||
+      lower === "warehouse_instock"
     ) {
-      return 'warehouseInStock';
+      return "warehouseInStock";
     }
 
     // Warehouse stock qty
     if (
-      lower === 'warehouse_stock_qty' ||
-      lower === 'warehousestockqty' ||
-      lower === 'warehouse_qty' ||
-      lower === 'warehouse_inventory'
+      lower === "warehouse_stock_qty" ||
+      lower === "warehousestockqty" ||
+      lower === "warehouse_qty" ||
+      lower === "warehouse_inventory"
     ) {
-      return 'warehouseStockQty';
+      return "warehouseStockQty";
     }
 
     // Warehouse price
-    if (lower === 'warehouse_price' || lower === 'warehouseprice') {
-      return 'warehousePrice';
+    if (lower === "warehouse_price" || lower === "warehouseprice") {
+      return "warehousePrice";
     }
 
     // Conditional mapping: inventory_available_qty
     // If warehouse_code column exists, map to warehouseStockQty; otherwise inventoryAvailable
-    if (lower === 'inventory_available_qty') {
+    if (lower === "inventory_available_qty") {
       if (ctx?.hasWarehouseCodeColumn) {
-        return 'warehouseStockQty';
+        return "warehouseStockQty";
       }
 
-      return 'inventoryAvailable';
+      return "inventoryAvailable";
     }
   }
 
   // Plate map patterns (prioritize for SCREENING_COMPOUND)
-  if (importKind === 'SCREENING_COMPOUND') {
+  if (importKind === "SCREENING_COMPOUND") {
     // Plate ID patterns - including rack_number for vendor files
     if (
-      lower === 'plate' ||
-      lower === 'plate_id' ||
-      lower === 'plateid' ||
-      lower === 'rack_number' ||
-      lower === 'racknumber' ||
-      lower === 'rack'
+      lower === "plate" ||
+      lower === "plate_id" ||
+      lower === "plateid" ||
+      lower === "rack_number" ||
+      lower === "racknumber" ||
+      lower === "rack"
     ) {
-      return 'plateId';
+      return "plateId";
     }
 
     // Well patterns - including plate_location for vendor files
     if (
-      lower === 'well' ||
-      lower === 'well_position' ||
-      lower === 'plate_location' ||
-      lower === 'platelocation' ||
-      lower === 'position' ||
-      lower === 'well_location'
+      lower === "well" ||
+      lower === "well_position" ||
+      lower === "plate_location" ||
+      lower === "platelocation" ||
+      lower === "position" ||
+      lower === "well_location"
     ) {
-      return 'well';
+      return "well";
     }
 
     // Row patterns
-    if (lower === 'row' || lower === 'plate_row') {
-      return 'row';
+    if (lower === "row" || lower === "plate_row") {
+      return "row";
     }
 
     // Column patterns
     if (
-      lower === 'column' ||
-      lower === 'col' ||
-      lower === 'plate_column' ||
-      lower === 'plate_col'
+      lower === "column" ||
+      lower === "col" ||
+      lower === "plate_column" ||
+      lower === "plate_col"
     ) {
-      return 'column';
+      return "column";
     }
 
     // Compound ID / IDNUMBER patterns
     if (
-      lower === 'idnumber' ||
-      lower === 'id_number' ||
-      lower === 'compound_id' ||
-      lower === 'compoundid' ||
-      lower === 'mcule_id' ||
-      lower === 'mcule id'
+      lower === "idnumber" ||
+      lower === "id_number" ||
+      lower === "compound_id" ||
+      lower === "compoundid" ||
+      lower === "mcule_id" ||
+      lower === "mcule id"
     ) {
-      return 'compoundId';
+      return "compoundId";
     }
 
     // Library name patterns
-    if (lower === 'library' || lower === 'library_name') {
-      return 'libraryName';
+    if (lower === "library" || lower === "library_name") {
+      return "libraryName";
     }
 
     // Target name patterns
     if (
-      lower === 'target' ||
-      lower === 'target_name' ||
-      lower === 'e3l' ||
-      lower === 'biological_target'
+      lower === "target" ||
+      lower === "target_name" ||
+      lower === "e3l" ||
+      lower === "biological_target"
     ) {
-      return 'targetName';
+      return "targetName";
     }
 
     // Pathway patterns
-    if (lower === 'pathway') {
-      return 'pathway';
+    if (lower === "pathway") {
+      return "pathway";
     }
 
     // Description patterns
-    if (lower === 'short_description' || lower === 'description') {
-      return 'description';
+    if (lower === "short_description" || lower === "description") {
+      return "description";
     }
 
     // Molecule type patterns
-    if (lower === 'type_of_molecule') {
-      return 'moleculeType';
+    if (lower === "type_of_molecule") {
+      return "moleculeType";
     }
 
     // Alias patterns
-    if (lower === 'alias') {
-      return 'alias';
+    if (lower === "alias") {
+      return "alias";
     }
 
     // Mechanism of action patterns
-    if (lower === 'mechanism_of_action' || lower === 'mechanism') {
-      return 'mechanismOfAction';
+    if (lower === "mechanism_of_action" || lower === "mechanism") {
+      return "mechanismOfAction";
     }
 
     // Concentration patterns
-    if (lower === 'concentration' || lower === 'conc') {
-      return 'concentration';
+    if (lower === "concentration" || lower === "conc") {
+      return "concentration";
     }
 
     // Volume patterns
-    if (lower === 'volume' || lower === 'vol') {
-      return 'volume';
+    if (lower === "volume" || lower === "vol") {
+      return "volume";
     }
 
     // Control type patterns
-    if (lower === 'control' || lower === 'control_type') {
-      return 'controlType';
+    if (lower === "control" || lower === "control_type") {
+      return "controlType";
     }
 
     // Batch ID patterns
-    if (lower === 'batch' || lower === 'batch_id' || lower === 'lot' || lower === 'lot_id') {
-      return 'batchId';
+    if (
+      lower === "batch" ||
+      lower === "batch_id" ||
+      lower === "lot" ||
+      lower === "lot_id"
+    ) {
+      return "batchId";
     }
   }
 
   // Catalog number patterns
   // Note: "cat" must be exact match to avoid false positives (e.g., "category")
   if (
-    lower === 'cat' ||
-    lower.includes('catalog') ||
-    lower.includes('sku') ||
-    lower.includes('product_id') ||
-    lower.includes('productid') ||
-    lower.includes('item_number') ||
-    lower.includes('part_number')
+    lower === "cat" ||
+    lower.includes("catalog") ||
+    lower.includes("sku") ||
+    lower.includes("product_id") ||
+    lower.includes("productid") ||
+    lower.includes("item_number") ||
+    lower.includes("part_number")
   ) {
-    return 'catalogNumber';
+    return "catalogNumber";
   }
 
   // CAS number patterns
-  if (lower.includes('cas') || lower === 'cas_number' || lower === 'casnumber') {
-    return 'cas';
+  if (
+    lower.includes("cas") ||
+    lower === "cas_number" ||
+    lower === "casnumber"
+  ) {
+    return "cas";
   }
 
   // InChI Key patterns
-  if (lower.includes('inchi') || lower.includes('inchikey')) {
-    return 'inchiKey';
+  if (lower.includes("inchi") || lower.includes("inchikey")) {
+    return "inchiKey";
   }
 
   // Product name patterns
   if (
-    lower.includes('name') ||
-    lower.includes('description') ||
-    lower.includes('title') ||
-    lower.includes('product')
+    lower.includes("name") ||
+    lower.includes("description") ||
+    lower.includes("title") ||
+    lower.includes("product")
   ) {
-    return 'productName';
+    return "productName";
   }
 
   // Package size patterns
   if (
-    lower.includes('package') ||
-    lower.includes('size') ||
-    lower.includes('quantity') ||
-    lower.includes('amount') ||
-    lower.includes('unit')
+    lower.includes("package") ||
+    lower.includes("size") ||
+    lower.includes("quantity") ||
+    lower.includes("amount") ||
+    lower.includes("unit")
   ) {
-    return 'packageSize';
+    return "packageSize";
   }
 
   // Price patterns
-  if (lower.includes('price') || lower.includes('cost') || lower.includes('usd')) {
-    return 'unitPrice';
+  if (
+    lower.includes("price") ||
+    lower.includes("cost") ||
+    lower.includes("usd")
+  ) {
+    return "unitPrice";
   }
 
   // Inventory patterns
   if (
-    lower.includes('inventory') ||
-    lower.includes('stock') ||
-    lower.includes('available') ||
-    lower.includes('qty')
+    lower.includes("inventory") ||
+    lower.includes("stock") ||
+    lower.includes("available") ||
+    lower.includes("qty")
   ) {
-    return 'inventoryAvailable';
+    return "inventoryAvailable";
   }
 
   // Lead time patterns
-  if (lower.includes('lead') || lower.includes('delivery') || lower.includes('ship')) {
-    return 'leadTime';
+  if (
+    lower.includes("lead") ||
+    lower.includes("delivery") ||
+    lower.includes("ship")
+  ) {
+    return "leadTime";
   }
 
   // Molecular formula patterns
   // Be specific to avoid false positives like "formulation"
   if (
-    lower === 'formula' ||
-    lower === 'mol_formula' ||
-    lower === 'molformula' ||
-    lower === 'molecular_formula' ||
-    lower === 'mf'
+    lower === "formula" ||
+    lower === "mol_formula" ||
+    lower === "molformula" ||
+    lower === "molecular_formula" ||
+    lower === "mf"
   ) {
-    return 'molFormula';
+    return "molFormula";
   }
 
   // Molecular weight patterns
   if (
-    lower.includes('weight') ||
-    lower === 'mw' ||
-    lower === 'mol_weight' ||
-    lower === 'molweight'
+    lower.includes("weight") ||
+    lower === "mw" ||
+    lower === "mol_weight" ||
+    lower === "molweight"
   ) {
-    return 'molWeight';
+    return "molWeight";
   }
 
   // SMILES patterns
-  if (lower.includes('smiles') || lower === 'structure') {
-    return 'smiles';
+  if (lower.includes("smiles") || lower === "structure") {
+    return "smiles";
   }
 
   // MDL Number patterns (identifier, not structure)
   // Includes MFCD format (MDL Foundation Compound Database)
   if (
-    lower === 'mdl_number_mdl' ||
-    lower === 'mdl_number' ||
-    lower === 'mdlnumber' ||
-    lower === 'mfcdnumber' ||
-    lower === 'mfcd_number' ||
-    lower === 'mfcd'
+    lower === "mdl_number_mdl" ||
+    lower === "mdl_number" ||
+    lower === "mdlnumber" ||
+    lower === "mfcdnumber" ||
+    lower === "mfcd_number" ||
+    lower === "mfcd"
   ) {
-    return 'mdlNumber';
+    return "mdlNumber";
   }
 
   // Molfile patterns (structure)
-  if (lower.includes('molfile') || lower.includes('mol_block') || lower === 'ctab') {
-    return 'molfile';
+  if (
+    lower.includes("molfile") ||
+    lower.includes("mol_block") ||
+    lower === "ctab"
+  ) {
+    return "molfile";
   }
 
   // Legacy MDL patterns - map to molfile for backward compatibility
   // Only if it doesn't look like an MDL number
-  if (lower === 'mdl' && !lower.includes('number')) {
-    return 'molfile';
+  if (lower === "mdl" && !lower.includes("number")) {
+    return "molfile";
   }
 
   // Salt data patterns
-  if (lower.includes('salt')) {
-    return 'saltData';
+  if (lower.includes("salt")) {
+    return "saltData";
   }
 
   // Purity patterns (including vendor-specific like "Quality", "Assay")
   if (
-    lower.includes('purity') ||
-    lower === 'quality' ||
-    lower === 'assay' ||
-    lower === 'hplc' ||
-    lower === 'lcms'
+    lower.includes("purity") ||
+    lower === "quality" ||
+    lower === "assay" ||
+    lower === "hplc" ||
+    lower === "lcms"
   ) {
-    return 'purity';
+    return "purity";
   }
 
   // Hazmat patterns
   if (
-    lower.includes('hazmat') ||
-    lower.includes('hazard') ||
-    lower === 'dangerousgoods' ||
-    lower === 'dangerous_goods' ||
-    lower === 'dg'
+    lower.includes("hazmat") ||
+    lower.includes("hazard") ||
+    lower === "dangerousgoods" ||
+    lower === "dangerous_goods" ||
+    lower === "dg"
   ) {
-    return 'hazmat';
+    return "hazmat";
   }
 
   // NOTE: Warehouse patterns for BUILDING_BLOCK are now handled at the TOP of this function
@@ -386,7 +407,7 @@ function autoDetectMapping(
   // match warehouse_stock_qty due to "stock" and "qty" substrings).
 
   // Default to ignore for unrecognized columns
-  return 'ignore';
+  return "ignore";
 }
 
 /**
@@ -394,13 +415,13 @@ function autoDetectMapping(
  */
 export function initializeColumnMapping(
   columns: HeaderPreviewColumn[],
-  importKind: CatalogImportKind = 'BUILDING_BLOCK',
+  importKind: CatalogImportKind = "BUILDING_BLOCK",
 ): ColumnMapping {
   // Compute context for conditional mapping logic
   const hasWarehouseCodeColumn = columns.some((col) => {
     const lower = col.fileColumn.toLowerCase().trim();
 
-    return lower === 'warehouse_code' || lower === 'warehousecode';
+    return lower === "warehouse_code" || lower === "warehousecode";
   });
 
   const ctx: AutoDetectContext = { hasWarehouseCodeColumn };
@@ -444,28 +465,34 @@ export function validateMapping(
 
   const mappedKinds = new Set(mapping.mappings.map((m) => m.mapTo));
 
-  if (importKind === 'SCREENING_COMPOUND') {
+  if (importKind === "SCREENING_COMPOUND") {
     // Compound ID is always required for screening compounds (compoundId or catalogNumber)
-    if (!mappedKinds.has('compoundId') && !mappedKinds.has('catalogNumber')) {
-      errors.push('Compound ID is required: map a column to "Compound ID" or "Catalog Number"');
+    if (!mappedKinds.has("compoundId") && !mappedKinds.has("catalogNumber")) {
+      errors.push(
+        'Compound ID is required: map a column to "Compound ID" or "Catalog Number"',
+      );
     }
 
-    if (screeningMode === 'COMPOUND_LIST') {
+    if (screeningMode === "COMPOUND_LIST") {
       // COMPOUND_LIST (unplated) mode:
       // - Structure is required
       // - Plate fields are NOT required
 
-      if (!mappedKinds.has('mdl') && !mappedKinds.has('molfile') && !mappedKinds.has('smiles')) {
+      if (
+        !mappedKinds.has("mdl") &&
+        !mappedKinds.has("molfile") &&
+        !mappedKinds.has("smiles")
+      ) {
         errors.push(
           'Structure is required for unplated compound lists: map a column to "Molfile (.mol)" or "SMILES"',
         );
       }
 
       // Plate fields are optional - just show a warning if provided but incomplete
-      const hasPlateId = mappedKinds.has('plateId');
-      const hasWell = mappedKinds.has('well');
-      const hasRow = mappedKinds.has('row');
-      const hasColumn = mappedKinds.has('column');
+      const hasPlateId = mappedKinds.has("plateId");
+      const hasWell = mappedKinds.has("well");
+      const hasRow = mappedKinds.has("row");
+      const hasColumn = mappedKinds.has("column");
 
       // If any plate field is mapped, check for mutual exclusivity
       if (hasWell && (hasRow || hasColumn)) {
@@ -475,27 +502,31 @@ export function validateMapping(
       }
 
       // Warnings for recommendations
-      if (!mappedKinds.has('libraryName')) {
-        warnings.push('Library Name is recommended for better organization of screening compounds');
+      if (!mappedKinds.has("libraryName")) {
+        warnings.push(
+          "Library Name is recommended for better organization of screening compounds",
+        );
       }
 
-      if (!mappedKinds.has('inchiKey')) {
-        warnings.push('InChI Key is recommended for compound deduplication and search');
+      if (!mappedKinds.has("inchiKey")) {
+        warnings.push(
+          "InChI Key is recommended for compound deduplication and search",
+        );
       }
 
       // Info about plate fields being optional
       if (!hasPlateId && !hasWell && !hasRow && !hasColumn) {
         // This is fine for unplated compound lists - no warning needed
       }
-    } else if (screeningMode === 'PLATED_KIT') {
+    } else if (screeningMode === "PLATED_KIT") {
       // PLATED_KIT (pre-plated) mode:
       // - Plate ID is required (unless defaultPlateId is provided)
       // - Well OR (Row AND Column) is required
       // - Structure is optional (warning only)
 
       // Plate ID validation
-      const hasPlateIdColumn = mappedKinds.has('plateId');
-      const hasDefaultPlateId = defaultPlateId && defaultPlateId.trim() !== '';
+      const hasPlateIdColumn = mappedKinds.has("plateId");
+      const hasDefaultPlateId = defaultPlateId && defaultPlateId.trim() !== "";
 
       if (!hasPlateIdColumn && !hasDefaultPlateId) {
         errors.push(
@@ -504,9 +535,9 @@ export function validateMapping(
       }
 
       // Well position validation
-      const hasWell = mappedKinds.has('well');
-      const hasRow = mappedKinds.has('row');
-      const hasColumn = mappedKinds.has('column');
+      const hasWell = mappedKinds.has("well");
+      const hasRow = mappedKinds.has("row");
+      const hasColumn = mappedKinds.has("column");
 
       if (!hasWell && !(hasRow && hasColumn)) {
         errors.push(
@@ -522,32 +553,40 @@ export function validateMapping(
       }
 
       // Structure is optional for pre-plated kits - just warn
-      if (!mappedKinds.has('mdl') && !mappedKinds.has('molfile') && !mappedKinds.has('smiles')) {
+      if (
+        !mappedKinds.has("mdl") &&
+        !mappedKinds.has("molfile") &&
+        !mappedKinds.has("smiles")
+      ) {
         warnings.push(
-          'Structure (SMILES or Molfile) is recommended but not required for pre-plated kits',
+          "Structure (SMILES or Molfile) is recommended but not required for pre-plated kits",
         );
       }
 
       // Warnings for recommendations
-      if (!mappedKinds.has('libraryName')) {
-        warnings.push('Library Name is recommended for better organization of screening compounds');
+      if (!mappedKinds.has("libraryName")) {
+        warnings.push(
+          "Library Name is recommended for better organization of screening compounds",
+        );
       }
     } else {
       // Default behavior when screeningMode is not specified (backwards compatibility)
       // This maintains the original strict validation
 
       // Plate ID is required
-      if (!mappedKinds.has('plateId')) {
+      if (!mappedKinds.has("plateId")) {
         errors.push('Plate ID is required: map a column to "Plate ID"');
       }
 
       // Well position: either well OR (row AND column)
-      const hasWell = mappedKinds.has('well');
-      const hasRow = mappedKinds.has('row');
-      const hasColumn = mappedKinds.has('column');
+      const hasWell = mappedKinds.has("well");
+      const hasRow = mappedKinds.has("row");
+      const hasColumn = mappedKinds.has("column");
 
       if (!hasWell && !(hasRow && hasColumn)) {
-        errors.push('Well position is required: map a column to "Well" OR both "Row" AND "Column"');
+        errors.push(
+          'Well position is required: map a column to "Well" OR both "Row" AND "Column"',
+        );
       }
 
       // Mutual exclusivity: well vs row/column
@@ -558,53 +597,75 @@ export function validateMapping(
       }
 
       // Structure is required (mdl, molfile, or smiles)
-      if (!mappedKinds.has('mdl') && !mappedKinds.has('molfile') && !mappedKinds.has('smiles')) {
-        errors.push('Structure is required: map a column to "Molfile (.mol)" or "SMILES"');
+      if (
+        !mappedKinds.has("mdl") &&
+        !mappedKinds.has("molfile") &&
+        !mappedKinds.has("smiles")
+      ) {
+        errors.push(
+          'Structure is required: map a column to "Molfile (.mol)" or "SMILES"',
+        );
       }
 
       // Warnings (non-blocking)
-      if (!mappedKinds.has('libraryName')) {
-        warnings.push('Library Name is recommended for better organization of screening compounds');
+      if (!mappedKinds.has("libraryName")) {
+        warnings.push(
+          "Library Name is recommended for better organization of screening compounds",
+        );
       }
 
-      if (!mappedKinds.has('inchiKey')) {
-        warnings.push('InChI Key is recommended for compound deduplication and search');
+      if (!mappedKinds.has("inchiKey")) {
+        warnings.push(
+          "InChI Key is recommended for compound deduplication and search",
+        );
       }
     }
   } else {
     // BUILDING_BLOCK validation
     // At least one key field is required
-    const keyFields: ColumnMappingKind[] = ['catalogNumber', 'cas', 'inchiKey', 'productName'];
+    const keyFields: ColumnMappingKind[] = [
+      "catalogNumber",
+      "cas",
+      "inchiKey",
+      "productName",
+    ];
     const hasAnyKey = keyFields.some((k) => mappedKinds.has(k));
 
     if (!hasAnyKey) {
       errors.push(
-        'At least one key field is required: Catalog Number, CAS Number, InChI Key, or Product Name',
+        "At least one key field is required: Catalog Number, CAS Number, InChI Key, or Product Name",
       );
     }
 
     // Warehouse validation: if any warehouse field is mapped, warehouseCode is required
     const warehouseFields: ColumnMappingKind[] = [
-      'warehouseCode',
-      'warehouseName',
-      'warehouseCountry',
-      'warehouseCity',
-      'warehouseLeadTimeDays',
-      'warehouseInStock',
-      'warehouseStockQty',
-      'warehousePrice',
+      "warehouseCode",
+      "warehouseName",
+      "warehouseCountry",
+      "warehouseCity",
+      "warehouseLeadTimeDays",
+      "warehouseInStock",
+      "warehouseStockQty",
+      "warehousePrice",
     ];
-    const hasAnyWarehouseField = warehouseFields.some((k) => mappedKinds.has(k));
-    const hasWarehouseCode = mappedKinds.has('warehouseCode');
+    const hasAnyWarehouseField = warehouseFields.some((k) =>
+      mappedKinds.has(k),
+    );
+    const hasWarehouseCode = mappedKinds.has("warehouseCode");
 
     if (hasAnyWarehouseField && !hasWarehouseCode) {
-      errors.push('Warehouse Code is required when mapping warehouse-specific fields');
+      errors.push(
+        "Warehouse Code is required when mapping warehouse-specific fields",
+      );
     }
 
     // Warning if both inventoryAvailable and warehouseStockQty are mapped
-    if (mappedKinds.has('inventoryAvailable') && mappedKinds.has('warehouseStockQty')) {
+    if (
+      mappedKinds.has("inventoryAvailable") &&
+      mappedKinds.has("warehouseStockQty")
+    ) {
       warnings.push(
-        'Warehouse Stock Qty is mapped. Recommend setting global Inventory Available to Ignore to avoid confusion.',
+        "Warehouse Stock Qty is mapped. Recommend setting global Inventory Available to Ignore to avoid confusion.",
       );
     }
   }
@@ -625,21 +686,25 @@ function analyzePrePlatedSamples(
   mapping: ColumnMapping,
 ): { plateIdCandidates: string[]; wellExample: string | null } {
   // Find mapped well column
-  const wellMapping = mapping.mappings.find((m) => m.mapTo === 'well' || m.mapTo === 'row');
-  const plateMapping = mapping.mappings.find((m) => m.mapTo === 'plateId');
+  const wellMapping = mapping.mappings.find(
+    (m) => m.mapTo === "well" || m.mapTo === "row",
+  );
+  const plateMapping = mapping.mappings.find((m) => m.mapTo === "plateId");
 
   let wellExample: string | null = null;
   const plateIdCandidates: string[] = [];
 
   // Get sample wells
   if (wellMapping) {
-    const wellCol = columns.find((c) => c.fileColumn === wellMapping.fileColumn);
+    const wellCol = columns.find(
+      (c) => c.fileColumn === wellMapping.fileColumn,
+    );
     if (wellCol && wellCol.samples.length > 0) {
       const sampleWell = wellCol.samples[0];
       // Simple normalization preview: lowercase a1 -> A01
       const match = sampleWell.match(/^([a-zA-Z])(\d{1,2})$/);
       if (match) {
-        const normalized = `${match[1].toUpperCase()}${match[2].padStart(2, '0')}`;
+        const normalized = `${match[1].toUpperCase()}${match[2].padStart(2, "0")}`;
         wellExample = `${sampleWell} → ${normalized}`;
       }
     }
@@ -647,7 +712,9 @@ function analyzePrePlatedSamples(
 
   // Get unique plate IDs from samples
   if (plateMapping) {
-    const plateCol = columns.find((c) => c.fileColumn === plateMapping.fileColumn);
+    const plateCol = columns.find(
+      (c) => c.fileColumn === plateMapping.fileColumn,
+    );
     if (plateCol && plateCol.samples.length > 0) {
       const uniquePlates = [...new Set(plateCol.samples.filter(Boolean))];
       plateIdCandidates.push(...uniquePlates.slice(0, 3)); // First 3 unique
@@ -660,34 +727,37 @@ function analyzePrePlatedSamples(
 /**
  * Get instruction text based on import kind and screening mode.
  */
-function getInstructionText(importKind: CatalogImportKind, screeningMode?: ScreeningMode): string {
-  if (importKind === 'BUILDING_BLOCK') {
+function getInstructionText(
+  importKind: CatalogImportKind,
+  screeningMode?: ScreeningMode,
+): string {
+  if (importKind === "BUILDING_BLOCK") {
     return (
-      'Map your file columns to the appropriate fields. At minimum, a key identifier ' +
-      '(Catalog Number, CAS, InChI Key, or Product Name) must be mapped. ' +
-      'For multiple warehouses, repeat the product on multiple rows and set ' +
-      'Warehouse Code + Warehouse Stock Qty for each row.'
+      "Map your file columns to the appropriate fields. At minimum, a key identifier " +
+      "(Catalog Number, CAS, InChI Key, or Product Name) must be mapped. " +
+      "For multiple warehouses, repeat the product on multiple rows and set " +
+      "Warehouse Code + Warehouse Stock Qty for each row."
     );
   }
 
-  if (screeningMode === 'COMPOUND_LIST') {
+  if (screeningMode === "COMPOUND_LIST") {
     return (
-      'Map your file columns to compound fields. For unplated compound lists, ' +
-      'Compound ID and Structure (SMILES or MDL) are required. Plate fields are optional.'
+      "Map your file columns to compound fields. For unplated compound lists, " +
+      "Compound ID and Structure (SMILES or MDL) are required. Plate fields are optional."
     );
   }
 
-  if (screeningMode === 'PLATED_KIT') {
+  if (screeningMode === "PLATED_KIT") {
     return (
-      'Map your file columns to plate-map and compound fields. For pre-plated kits, ' +
-      'Compound ID, Plate ID (or Default Plate ID), and Well position are required. Structure is optional.'
+      "Map your file columns to plate-map and compound fields. For pre-plated kits, " +
+      "Compound ID, Plate ID (or Default Plate ID), and Well position are required. Structure is optional."
     );
   }
 
   // Default for backwards compatibility
   return (
-    'Map your file columns to plate-map and compound fields. Plate ID, Well position, ' +
-    'Compound ID, and Structure are required.'
+    "Map your file columns to plate-map and compound fields. Plate ID, Well position, " +
+    "Compound ID, and Structure are required."
   );
 }
 
@@ -702,7 +772,10 @@ export function ColumnMappingStep({
   screeningMode,
   defaultPlateId,
 }: ColumnMappingStepProps) {
-  const handleMappingChange = (fileColumn: string, newMapTo: ColumnMappingKind) => {
+  const handleMappingChange = (
+    fileColumn: string,
+    newMapTo: ColumnMappingKind,
+  ) => {
     const newMappings = mapping.mappings.map((m) =>
       m.fileColumn === fileColumn ? { ...m, mapTo: newMapTo } : m,
     );
@@ -712,15 +785,22 @@ export function ColumnMappingStep({
   const getMappingForColumn = (fileColumn: string): ColumnMappingKind => {
     const entry = mapping.mappings.find((m) => m.fileColumn === fileColumn);
 
-    return entry?.mapTo || 'ignore';
+    return entry?.mapTo || "ignore";
   };
 
   // Validate mapping with screening mode
-  const validation = validateMapping(mapping, importKind, screeningMode, defaultPlateId);
+  const validation = validateMapping(
+    mapping,
+    importKind,
+    screeningMode,
+    defaultPlateId,
+  );
 
   // Get grouped options based on import kind
   const optionGroups =
-    importKind === 'SCREENING_COMPOUND' ? SCREENING_COMPOUND_OPTIONS : BUILDING_BLOCK_OPTIONS;
+    importKind === "SCREENING_COMPOUND"
+      ? SCREENING_COMPOUND_OPTIONS
+      : BUILDING_BLOCK_OPTIONS;
 
   // Render grouped select options
   const renderSelectOptions = () => {
@@ -731,7 +811,7 @@ export function ColumnMappingStep({
       items.push(
         <ListSubheader
           key={`header-${groupIndex}`}
-          sx={{ backgroundColor: 'background.paper', fontWeight: 'bold' }}
+          sx={{ backgroundColor: "background.paper", fontWeight: "bold" }}
         >
           {group.group}
         </ListSubheader>,
@@ -739,7 +819,7 @@ export function ColumnMappingStep({
 
       // Add options in group
       group.options.forEach((option) => {
-        const isIgnore = option === 'ignore';
+        const isIgnore = option === "ignore";
         items.push(
           <MenuItem
             key={option}
@@ -747,8 +827,8 @@ export function ColumnMappingStep({
             sx={{
               pl: 3,
               ...(isIgnore && {
-                color: 'error.main',
-                fontWeight: 'medium',
+                color: "error.main",
+                fontWeight: "medium",
               }),
             }}
           >
@@ -768,32 +848,39 @@ export function ColumnMappingStep({
       </Typography>
 
       {/* Show default plate ID info for plated kits */}
-      {screeningMode === 'PLATED_KIT' && defaultPlateId && (
+      {screeningMode === "PLATED_KIT" && defaultPlateId && (
         <Alert severity="info" sx={{ mb: 2 }}>
-          Default Plate ID: <strong>{defaultPlateId}</strong> — This will be used for rows without a
-          mapped Plate ID column.
+          Default Plate ID: <strong>{defaultPlateId}</strong> — This will be
+          used for rows without a mapped Plate ID column.
         </Alert>
       )}
 
       {/* Detection preview for pre-plated kits */}
-      {screeningMode === 'PLATED_KIT' &&
+      {screeningMode === "PLATED_KIT" &&
         (() => {
-          const { plateIdCandidates, wellExample } = analyzePrePlatedSamples(columns, mapping);
+          const { plateIdCandidates, wellExample } = analyzePrePlatedSamples(
+            columns,
+            mapping,
+          );
           const hasPreview = plateIdCandidates.length > 0 || wellExample;
           if (!hasPreview) return null;
 
           return (
             <Alert severity="success" sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
                 Detected:
               </Typography>
               {plateIdCandidates.length > 0 && (
                 <Typography variant="body2">
-                  Plate IDs: {plateIdCandidates.join(', ')}
-                  {plateIdCandidates.length === 3 ? '...' : ''}
+                  Plate IDs: {plateIdCandidates.join(", ")}
+                  {plateIdCandidates.length === 3 ? "..." : ""}
                 </Typography>
               )}
-              {wellExample && <Typography variant="body2">Well format: {wellExample}</Typography>}
+              {wellExample && (
+                <Typography variant="body2">
+                  Well format: {wellExample}
+                </Typography>
+              )}
             </Alert>
           );
         })()}
@@ -801,7 +888,7 @@ export function ColumnMappingStep({
       {/* Validation Errors */}
       {validation.errors.length > 0 && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
             Required fields missing:
           </Typography>
           <ul style={{ margin: 0, paddingLeft: 20 }}>
@@ -815,7 +902,7 @@ export function ColumnMappingStep({
       {/* Validation Warnings */}
       {validation.warnings.length > 0 && validation.errors.length === 0 && (
         <Alert severity="warning" sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
             Recommendations:
           </Typography>
           <ul style={{ margin: 0, paddingLeft: 20 }}>
@@ -830,9 +917,9 @@ export function ColumnMappingStep({
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>File Column</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Sample Values</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Map To</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>File Column</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Sample Values</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Map To</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -849,14 +936,14 @@ export function ColumnMappingStep({
                     color="text.secondary"
                     sx={{
                       maxWidth: 200,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
-                    title={col.samples.join(', ')}
+                    title={col.samples.join(", ")}
                   >
-                    {col.samples.slice(0, 3).join(', ')}
-                    {col.samples.length > 3 && '...'}
+                    {col.samples.slice(0, 3).join(", ")}
+                    {col.samples.length > 3 && "..."}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -864,7 +951,10 @@ export function ColumnMappingStep({
                     <Select
                       value={getMappingForColumn(col.fileColumn)}
                       onChange={(e) =>
-                        handleMappingChange(col.fileColumn, e.target.value as ColumnMappingKind)
+                        handleMappingChange(
+                          col.fileColumn,
+                          e.target.value as ColumnMappingKind,
+                        )
                       }
                       disabled={isLoading}
                     >
@@ -880,15 +970,19 @@ export function ColumnMappingStep({
 
       <Box
         sx={{
-          display: 'flex',
+          display: "flex",
           gap: 2,
-          justifyContent: 'space-between',
+          justifyContent: "space-between",
         }}
       >
         <Button variant="outlined" onClick={onBack} disabled={isLoading}>
           Back
         </Button>
-        <Button variant="contained" onClick={onConfirm} disabled={!validation.valid || isLoading}>
+        <Button
+          variant="contained"
+          onClick={onConfirm}
+          disabled={!validation.valid || isLoading}
+        >
           Start Import
         </Button>
       </Box>

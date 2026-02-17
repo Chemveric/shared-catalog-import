@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   CatalogImportMode,
   CatalogImportStatus,
@@ -8,7 +8,7 @@ import {
   HeaderPreviewResponse,
   ScreeningMode,
   PlateFormat,
-} from './types';
+} from "./types";
 
 // Re-export types for convenience
 export type {
@@ -19,9 +19,9 @@ export type {
   HeaderPreviewResponse,
   ScreeningMode,
   PlateFormat,
-} from './types';
+} from "./types";
 
-export type { CatalogImportError, CatalogImportProgress } from './types';
+export type { CatalogImportError, CatalogImportProgress } from "./types";
 
 /**
  * API configuration for the catalog import hook.
@@ -59,7 +59,10 @@ export interface StartCatalogImportParams {
  * @param organizationId - The organization ID for the import
  * @param apiConfig - API configuration for endpoints
  */
-export function useCatalogImport(organizationId: string, apiConfig: CatalogImportApiConfig) {
+export function useCatalogImport(
+  organizationId: string,
+  apiConfig: CatalogImportApiConfig,
+) {
   const [status, setStatus] = useState<CatalogImportStatus | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,34 +73,44 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
   const getStatus = useCallback(
     async (jobId: string) => {
       try {
-        console.log('[IMPORT_DEBUG] getStatus called for jobId:', jobId);
-        console.log('[IMPORT_DEBUG] getStatus URL:', apiConfig.getStatusUrl(jobId));
+        console.log("[IMPORT_DEBUG] getStatus called for jobId:", jobId);
+        console.log(
+          "[IMPORT_DEBUG] getStatus URL:",
+          apiConfig.getStatusUrl(jobId),
+        );
         const response = await fetch(apiConfig.getStatusUrl(jobId), {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          credentials: 'include',
+          credentials: "include",
         });
 
-        console.log('[IMPORT_DEBUG] getStatus response status:', response.status);
+        console.log(
+          "[IMPORT_DEBUG] getStatus response status:",
+          response.status,
+        );
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({
-            message: 'Failed to get import status',
+            message: "Failed to get import status",
           }));
-          console.log('[IMPORT_DEBUG] getStatus error:', errorData);
-          throw new Error(errorData.message || 'Failed to get import status');
+          console.log("[IMPORT_DEBUG] getStatus error:", errorData);
+          throw new Error(errorData.message || "Failed to get import status");
         }
 
         const data = await response.json();
-        console.log('[IMPORT_DEBUG] getStatus response data:', JSON.stringify(data, null, 2));
+        console.log(
+          "[IMPORT_DEBUG] getStatus response data:",
+          JSON.stringify(data, null, 2),
+        );
         setStatus(data);
 
         return data;
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to get import status';
-        console.error('[IMPORT_DEBUG] getStatus exception:', err);
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to get import status";
+        console.error("[IMPORT_DEBUG] getStatus exception:", err);
         setError(errorMessage);
         throw err;
       }
@@ -116,7 +129,7 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
           organizationId,
           fileId: params.fileId,
           mode: params.mode,
-          importKind: params.importKind || 'BUILDING_BLOCK',
+          importKind: params.importKind || "BUILDING_BLOCK",
         };
 
         // Add column mapping if provided
@@ -138,45 +151,60 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
           requestBody.defaultPlateId = params.defaultPlateId;
         }
 
-        console.log('[IMPORT_DEBUG] startImport called');
-        console.log('[IMPORT_DEBUG] startImport URL:', apiConfig.startImportUrl);
+        console.log("[IMPORT_DEBUG] startImport called");
         console.log(
-          '[IMPORT_DEBUG] startImport requestBody:',
+          "[IMPORT_DEBUG] startImport URL:",
+          apiConfig.startImportUrl,
+        );
+        console.log(
+          "[IMPORT_DEBUG] startImport requestBody:",
           JSON.stringify(requestBody, null, 2),
         );
 
         const response = await fetch(apiConfig.startImportUrl, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          credentials: 'include',
+          credentials: "include",
           body: JSON.stringify(requestBody),
         });
 
-        console.log('[IMPORT_DEBUG] startImport response status:', response.status);
+        console.log(
+          "[IMPORT_DEBUG] startImport response status:",
+          response.status,
+        );
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({
-            message: 'Failed to start catalog import',
+            message: "Failed to start catalog import",
           }));
-          console.log('[IMPORT_DEBUG] startImport error response:', errorData);
-          throw new Error(errorData.message || 'Failed to start catalog import');
+          console.log("[IMPORT_DEBUG] startImport error response:", errorData);
+          throw new Error(
+            errorData.message || "Failed to start catalog import",
+          );
         }
 
         const data = await response.json();
-        console.log('[IMPORT_DEBUG] startImport success response:', JSON.stringify(data, null, 2));
-        console.log('[IMPORT_DEBUG] jobId received:', data.jobId);
+        console.log(
+          "[IMPORT_DEBUG] startImport success response:",
+          JSON.stringify(data, null, 2),
+        );
+        console.log("[IMPORT_DEBUG] jobId received:", data.jobId);
         jobIdRef.current = data.jobId;
 
         // Immediately fetch initial status
-        console.log('[IMPORT_DEBUG] Fetching initial status for jobId:', data.jobId);
+        console.log(
+          "[IMPORT_DEBUG] Fetching initial status for jobId:",
+          data.jobId,
+        );
         await getStatus(data.jobId);
 
         return data.jobId;
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to start catalog import';
-        console.error('[IMPORT_DEBUG] startImport exception:', err);
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to start catalog import";
+        console.error("[IMPORT_DEBUG] startImport exception:", err);
         setError(errorMessage);
         throw err;
       } finally {
@@ -188,13 +216,16 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
 
   const getActiveImports = useCallback(async () => {
     try {
-      const response = await fetch(apiConfig.getActiveImportsUrl(organizationId), {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        apiConfig.getActiveImportsUrl(organizationId),
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
         },
-        credentials: 'include',
-      });
+      );
 
       if (!response.ok) {
         return null;
@@ -211,39 +242,49 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
   const previewHeaders = useCallback(
     async (fileId: string): Promise<HeaderPreviewResponse | null> => {
       try {
-        console.log('[IMPORT_DEBUG] previewHeaders called for fileId:', fileId);
-        console.log('[IMPORT_DEBUG] previewHeaders URL:', apiConfig.previewHeadersUrl);
-        console.log('[IMPORT_DEBUG] previewHeaders organizationId:', organizationId);
+        console.log("[IMPORT_DEBUG] previewHeaders called for fileId:", fileId);
+        console.log(
+          "[IMPORT_DEBUG] previewHeaders URL:",
+          apiConfig.previewHeadersUrl,
+        );
+        console.log(
+          "[IMPORT_DEBUG] previewHeaders organizationId:",
+          organizationId,
+        );
         const response = await fetch(apiConfig.previewHeadersUrl, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          credentials: 'include',
+          credentials: "include",
           body: JSON.stringify({
             fileId,
             organizationId,
           }),
         });
-        console.log('[IMPORT_DEBUG] previewHeaders response status:', response.status);
+        console.log(
+          "[IMPORT_DEBUG] previewHeaders response status:",
+          response.status,
+        );
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({
-            message: 'Failed to preview headers',
+            message: "Failed to preview headers",
           }));
           console.error(
-            '[IMPORT_DEBUG] previewHeaders error response body:',
+            "[IMPORT_DEBUG] previewHeaders error response body:",
             JSON.stringify(errorData, null, 2),
           );
-          throw new Error(errorData.message || 'Failed to preview headers');
+          throw new Error(errorData.message || "Failed to preview headers");
         }
 
         const data = await response.json();
 
         return data;
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to preview headers';
-        console.error('[IMPORT_DEBUG] previewHeaders exception:', err);
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to preview headers";
+        console.error("[IMPORT_DEBUG] previewHeaders exception:", err);
         setError(errorMessage);
 
         return null;
@@ -268,7 +309,7 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
     const currentJobId = jobIdRef.current;
     if (!currentJobId || !status) return;
 
-    if (status.state === 'completed' || status.state === 'failed') {
+    if (status.state === "completed" || status.state === "failed") {
       setIsPolling(false);
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
@@ -278,7 +319,7 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
       return;
     }
 
-    if (status.state === 'queued' || status.state === 'active') {
+    if (status.state === "queued" || status.state === "active") {
       setIsPolling(true);
 
       // Poll every 2 seconds
@@ -286,7 +327,7 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
         try {
           await getStatus(currentJobId);
         } catch (err) {
-          console.error('Error polling catalog import status:', err);
+          console.error("Error polling catalog import status:", err);
         }
       }, 2000);
     }
