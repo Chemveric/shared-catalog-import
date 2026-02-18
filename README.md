@@ -5,6 +5,7 @@ Shared catalog import components, hooks, and types for the Chemveric frontend an
 ## Usage
 
 This package is used as a git submodule in both:
+
 - `frontend` - Main customer-facing application
 - `Admin-Dashboard` - Internal admin application
 
