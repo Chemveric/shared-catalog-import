@@ -527,8 +527,8 @@ export function CatalogImportWizard({
         // Move to mapping step
         setActiveStep(2);
       }
-    } catch (err) {
-      console.error('Failed to preview headers:', err);
+    } catch {
+      // Error is already reported by the hook
     } finally {
       setIsLoadingHeaders(false);
     }
@@ -565,8 +565,8 @@ export function CatalogImportWizard({
         defaultPlateId:
           screeningMode === 'PLATED_KIT' ? defaultPlateId.trim() || undefined : undefined,
       });
-    } catch (err) {
-      console.error('Failed to start import:', err);
+    } catch {
+      // Error is already reported by the hook
     }
   }, [
     fileId,
