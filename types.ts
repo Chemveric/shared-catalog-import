@@ -7,21 +7,21 @@
 // Core Import Types
 // ============================================================================
 
-export type CatalogImportMode = "merge" | "replace";
+export type CatalogImportMode = 'merge' | 'replace';
 
-export type CatalogImportKind = "BUILDING_BLOCK" | "SCREENING_COMPOUND";
+export type CatalogImportKind = 'BUILDING_BLOCK' | 'SCREENING_COMPOUND';
 
 /**
  * Screening import sub-mode:
  * - COMPOUND_LIST: Unplated screening compound list (no plate fields required)
  * - PLATED_KIT: Pre-plated screening library kit (plate fields required)
  */
-export type ScreeningMode = "COMPOUND_LIST" | "PLATED_KIT";
+export type ScreeningMode = 'COMPOUND_LIST' | 'PLATED_KIT';
 
 /**
  * Plate format for pre-plated screening kits.
  */
-export type PlateFormat = "P96" | "P384" | "P1536";
+export type PlateFormat = 'P96' | 'P384' | 'P1536';
 
 // ============================================================================
 // Column Mapping Types
@@ -32,59 +32,59 @@ export type PlateFormat = "P96" | "P384" | "P1536";
  * Mirrors backend ColumnMappingKind.
  */
 export type ColumnMappingKind =
-  | "catalogNumber"
-  | "cas"
-  | "inchiKey"
-  | "productName"
-  | "mdlNumber"
-  | "packageSize"
-  | "unitPrice"
-  | "inventoryAvailable"
-  | "leadTime"
-  | "molFormula"
-  | "molWeight"
-  | "smiles"
-  | "mdl"
-  | "molfile"
-  | "saltData"
+  | 'catalogNumber'
+  | 'cas'
+  | 'inchiKey'
+  | 'productName'
+  | 'mdlNumber'
+  | 'packageSize'
+  | 'unitPrice'
+  | 'inventoryAvailable'
+  | 'leadTime'
+  | 'molFormula'
+  | 'molWeight'
+  | 'smiles'
+  | 'mdl'
+  | 'molfile'
+  | 'saltData'
   // Plate map fields (for compound library/kit imports)
-  | "plateId"
-  | "well"
-  | "row"
-  | "column"
-  | "compoundId"
+  | 'plateId'
+  | 'well'
+  | 'row'
+  | 'column'
+  | 'compoundId'
   // Library metadata
-  | "libraryName"
-  | "libraryId"
-  | "targetName"
-  | "pathway"
-  | "description"
-  | "moleculeType"
-  | "alias"
-  | "mechanismOfAction"
+  | 'libraryName'
+  | 'libraryId'
+  | 'targetName'
+  | 'pathway'
+  | 'description'
+  | 'moleculeType'
+  | 'alias'
+  | 'mechanismOfAction'
   // Supply and handling
-  | "concentration"
-  | "volume"
-  | "solvent"
-  | "storageConditions"
+  | 'concentration'
+  | 'volume'
+  | 'solvent'
+  | 'storageConditions'
   // Screening annotations
-  | "controlType"
-  | "batchId"
-  | "purity"
-  | "chiralPurity"
-  | "hazmat"
+  | 'controlType'
+  | 'batchId'
+  | 'purity'
+  | 'chiralPurity'
+  | 'hazmat'
   // Product metadata
-  | "countryOfOrigin"
+  | 'countryOfOrigin'
   // Warehouse fields (one warehouse per row)
-  | "warehouseCode"
-  | "warehouseName"
-  | "warehouseCountry"
-  | "warehouseCity"
-  | "warehouseLeadTimeDays"
-  | "warehouseInStock"
-  | "warehouseStockQty"
-  | "warehousePrice"
-  | "ignore";
+  | 'warehouseCode'
+  | 'warehouseName'
+  | 'warehouseCountry'
+  | 'warehouseCity'
+  | 'warehouseLeadTimeDays'
+  | 'warehouseInStock'
+  | 'warehouseStockQty'
+  | 'warehousePrice'
+  | 'ignore';
 
 /**
  * Single column mapping entry.
@@ -141,7 +141,7 @@ export interface CatalogImportProgress {
 export interface CatalogImportStatus {
   jobId: string;
   organizationId: string;
-  state: "queued" | "active" | "completed" | "failed";
+  state: 'queued' | 'active' | 'completed' | 'failed';
   progress?: CatalogImportProgress;
   errorsLocation?: string;
   failureReason?: string;
@@ -210,178 +210,159 @@ export interface MappingOptionGroup {
 /** Human-readable labels for column mapping kinds */
 export const MAPPING_LABELS: Record<ColumnMappingKind, string> = {
   // Compound Identifiers
-  catalogNumber: "Catalog Number",
-  cas: "CAS Number",
-  inchiKey: "InChI Key",
-  productName: "Product Name",
-  compoundId: "Compound ID",
-  mdlNumber: "MDL Number",
+  catalogNumber: 'Catalog Number',
+  cas: 'CAS Number',
+  inchiKey: 'InChI Key',
+  productName: 'Product Name',
+  compoundId: 'Compound ID',
+  mdlNumber: 'MDL Number',
   // Plate Map
-  plateId: "Plate ID",
-  well: "Well",
-  row: "Row",
-  column: "Column",
+  plateId: 'Plate ID',
+  well: 'Well',
+  row: 'Row',
+  column: 'Column',
   // Library Metadata
-  libraryName: "Library Name",
-  libraryId: "Library ID",
-  targetName: "Target Name",
-  pathway: "Pathway",
-  description: "Description",
-  moleculeType: "Molecule Type",
-  alias: "Alias",
-  mechanismOfAction: "Mechanism of Action",
+  libraryName: 'Library Name',
+  libraryId: 'Library ID',
+  targetName: 'Target Name',
+  pathway: 'Pathway',
+  description: 'Description',
+  moleculeType: 'Molecule Type',
+  alias: 'Alias',
+  mechanismOfAction: 'Mechanism of Action',
   // Structure
-  smiles: "SMILES",
-  mdl: "MDL/Molfile",
-  molfile: "Molfile (.mol)",
+  smiles: 'SMILES',
+  mdl: 'MDL/Molfile',
+  molfile: 'Molfile (.mol)',
   // Chemistry Descriptors
-  molFormula: "Molecular Formula",
-  molWeight: "Molecular Weight",
-  saltData: "Salt Data",
-  purity: "Purity",
-  chiralPurity: "Chiral Purity",
+  molFormula: 'Molecular Formula',
+  molWeight: 'Molecular Weight',
+  saltData: 'Salt Data',
+  purity: 'Purity',
+  chiralPurity: 'Chiral Purity',
   // Supply & Handling
-  concentration: "Concentration",
-  volume: "Volume",
-  solvent: "Solvent",
-  storageConditions: "Storage Conditions",
+  concentration: 'Concentration',
+  volume: 'Volume',
+  solvent: 'Solvent',
+  storageConditions: 'Storage Conditions',
   // Commercial
-  packageSize: "Package Size",
-  unitPrice: "Unit Price",
-  inventoryAvailable: "Inventory Available",
-  leadTime: "Lead Time",
+  packageSize: 'Package Size',
+  unitPrice: 'Unit Price',
+  inventoryAvailable: 'Inventory Available',
+  leadTime: 'Lead Time',
   // Screening Annotations
-  controlType: "Control Type",
-  batchId: "Batch ID",
+  controlType: 'Control Type',
+  batchId: 'Batch ID',
   // Hazard & Operational
-  hazmat: "Hazmat (Yes/No)",
+  hazmat: 'Hazmat (Yes/No)',
   // Product Metadata
-  countryOfOrigin: "Country of Origin",
+  countryOfOrigin: 'Country of Origin',
   // Warehouse
-  warehouseCode: "Warehouse Code",
-  warehouseName: "Warehouse Name",
-  warehouseCountry: "Warehouse Country",
-  warehouseCity: "Warehouse City",
-  warehouseLeadTimeDays: "Warehouse Lead Time (Days)",
-  warehouseInStock: "Warehouse In Stock",
-  warehouseStockQty: "Warehouse Stock Qty",
-  warehousePrice: "Warehouse Price",
+  warehouseCode: 'Warehouse Code',
+  warehouseName: 'Warehouse Name',
+  warehouseCountry: 'Warehouse Country',
+  warehouseCity: 'Warehouse City',
+  warehouseLeadTimeDays: 'Warehouse Lead Time (Days)',
+  warehouseInStock: 'Warehouse In Stock',
+  warehouseStockQty: 'Warehouse Stock Qty',
+  warehousePrice: 'Warehouse Price',
   // Other
-  ignore: "Ignore Column",
+  ignore: 'Ignore Column',
 };
 
 /** Grouped mapping options for BUILDING_BLOCK imports */
 export const BUILDING_BLOCK_OPTIONS: MappingOptionGroup[] = [
   {
-    group: "Compound Identifiers",
-    options: ["catalogNumber", "cas", "inchiKey", "productName", "mdlNumber"],
+    group: 'Compound Identifiers',
+    options: ['catalogNumber', 'cas', 'inchiKey', 'productName', 'mdlNumber'],
   },
   {
-    group: "Structure",
-    options: ["smiles", "molfile"],
+    group: 'Structure',
+    options: ['smiles', 'molfile'],
   },
   {
-    group: "Chemistry Descriptors",
-    options: ["molFormula", "molWeight", "saltData", "purity", "chiralPurity"],
+    group: 'Chemistry Descriptors',
+    options: ['molFormula', 'molWeight', 'saltData', 'purity', 'chiralPurity'],
   },
   {
-    group: "Commercial",
+    group: 'Commercial',
+    options: ['packageSize', 'unitPrice', 'inventoryAvailable', 'leadTime', 'hazmat'],
+  },
+  {
+    group: 'Product Metadata',
+    options: ['countryOfOrigin', 'storageConditions'],
+  },
+  {
+    group: 'Warehouses',
     options: [
-      "packageSize",
-      "unitPrice",
-      "inventoryAvailable",
-      "leadTime",
-      "hazmat",
+      'warehouseCode',
+      'warehouseName',
+      'warehouseCountry',
+      'warehouseCity',
+      'warehouseLeadTimeDays',
+      'warehouseInStock',
+      'warehouseStockQty',
+      'warehousePrice',
     ],
   },
   {
-    group: "Product Metadata",
-    options: ["countryOfOrigin", "storageConditions"],
-  },
-  {
-    group: "Warehouses",
-    options: [
-      "warehouseCode",
-      "warehouseName",
-      "warehouseCountry",
-      "warehouseCity",
-      "warehouseLeadTimeDays",
-      "warehouseInStock",
-      "warehouseStockQty",
-      "warehousePrice",
-    ],
-  },
-  {
-    group: "Other",
-    options: ["ignore"],
+    group: 'Other',
+    options: ['ignore'],
   },
 ];
 
 /** Grouped mapping options for SCREENING_COMPOUND imports */
 export const SCREENING_COMPOUND_OPTIONS: MappingOptionGroup[] = [
   {
-    group: "Plate Map",
-    options: ["plateId", "well", "row", "column"],
+    group: 'Plate Map',
+    options: ['plateId', 'well', 'row', 'column'],
   },
   {
-    group: "Compound Identifiers",
+    group: 'Compound Identifiers',
+    options: ['compoundId', 'catalogNumber', 'cas', 'inchiKey', 'productName', 'mdlNumber'],
+  },
+  {
+    group: 'Structure',
+    options: ['smiles', 'molfile'],
+  },
+  {
+    group: 'Library & Kit Metadata',
     options: [
-      "compoundId",
-      "catalogNumber",
-      "cas",
-      "inchiKey",
-      "productName",
-      "mdlNumber",
+      'libraryName',
+      'libraryId',
+      'targetName',
+      'pathway',
+      'description',
+      'moleculeType',
+      'alias',
+      'mechanismOfAction',
     ],
   },
   {
-    group: "Structure",
-    options: ["smiles", "molfile"],
+    group: 'PhysChem & Salt',
+    options: ['molFormula', 'molWeight', 'saltData', 'purity', 'chiralPurity'],
   },
   {
-    group: "Library & Kit Metadata",
-    options: [
-      "libraryName",
-      "libraryId",
-      "targetName",
-      "pathway",
-      "description",
-      "moleculeType",
-      "alias",
-      "mechanismOfAction",
-    ],
+    group: 'Supply & Handling',
+    options: ['concentration', 'volume', 'solvent', 'storageConditions'],
   },
   {
-    group: "PhysChem & Salt",
-    options: ["molFormula", "molWeight", "saltData", "purity", "chiralPurity"],
+    group: 'Screening Annotations',
+    options: ['controlType', 'batchId'],
   },
   {
-    group: "Supply & Handling",
-    options: ["concentration", "volume", "solvent", "storageConditions"],
+    group: 'Commercial',
+    options: ['packageSize', 'unitPrice', 'inventoryAvailable', 'leadTime', 'hazmat'],
   },
   {
-    group: "Screening Annotations",
-    options: ["controlType", "batchId"],
-  },
-  {
-    group: "Commercial",
-    options: [
-      "packageSize",
-      "unitPrice",
-      "inventoryAvailable",
-      "leadTime",
-      "hazmat",
-    ],
-  },
-  {
-    group: "Other",
-    options: ["ignore"],
+    group: 'Other',
+    options: ['ignore'],
   },
 ];
 
 /** Plate format options with labels */
 export const PLATE_FORMAT_OPTIONS: { value: PlateFormat; label: string }[] = [
-  { value: "P96", label: "96-well" },
-  { value: "P384", label: "384-well" },
-  { value: "P1536", label: "1536-well" },
+  { value: 'P96', label: '96-well' },
+  { value: 'P384', label: '384-well' },
+  { value: 'P1536', label: '1536-well' },
 ];
