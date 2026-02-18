@@ -36,6 +36,8 @@ export interface CatalogImportApiConfig {
   getActiveImportsUrl: (organizationId: string) => string;
   /** POST endpoint to preview file headers */
   previewHeadersUrl: string;
+  /** DELETE endpoint to cancel an import job (receives jobId as parameter) */
+  cancelImportUrl?: (jobId: string) => string;
 }
 
 /**
@@ -96,6 +98,7 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
   const [isPolling, setIsPolling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const jobIdRef = useRef<string | null>(null);
 
@@ -285,10 +288,63 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
     [apiConfig, organizationId],
   );
 
+  const cancelImport = useCallback(
+    async (jobId: string) => {
+      if (!apiConfig.cancelImportUrl) {
+        console.error('[IMPORT_DEBUG] cancelImportUrl not configured');
+        throw new Error('Cancel import not supported');
+      }
+
+      try {
+        setIsCancelling(true);
+        console.log('[IMPORT_DEBUG] cancelImport called for jobId:', jobId);
+        const response = await fetch(apiConfig.cancelImportUrl(jobId), {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({
+            message: 'Failed to cancel import',
+          }));
+          throw new Error(errorData.message || 'Failed to cancel import');
+        }
+
+        const data = await response.json();
+        console.log('[IMPORT_DEBUG] cancelImport result:', data);
+
+        if (data.cancelled) {
+          // Stop polling
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+          setIsPolling(false);
+          // Refresh status
+          await getStatus(jobId);
+        }
+
+        return data.cancelled as boolean;
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to cancel import';
+        console.error('[IMPORT_DEBUG] cancelImport exception:', err);
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setIsCancelling(false);
+      }
+    },
+    [apiConfig, getStatus],
+  );
+
   const reset = useCallback(() => {
     setStatus(null);
     setError(null);
     setIsPolling(false);
+    setIsCancelling(false);
     jobIdRef.current = null;
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
@@ -343,6 +399,7 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
 
   return {
     startImport,
+    cancelImport,
     getStatus,
     getActiveImports,
     previewHeaders,
@@ -350,6 +407,7 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
     status,
     isPolling,
     isStarting,
+    isCancelling,
     error,
   };
 }

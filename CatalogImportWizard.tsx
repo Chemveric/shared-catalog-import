@@ -456,10 +456,18 @@ export function CatalogImportWizard({
   });
   const [isLoadingHeaders, setIsLoadingHeaders] = useState(false);
 
-  const { startImport, previewHeaders, reset, status, isStarting, error } = useCatalogImport(
-    organizationId,
-    apiConfig,
-  );
+  const {
+    startImport,
+    cancelImport,
+    previewHeaders,
+    reset,
+    status,
+    isStarting,
+    isCancelling,
+    error,
+  } = useCatalogImport(organizationId, apiConfig);
+
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   // Sync file state from props
   useEffect(() => {
@@ -594,6 +602,17 @@ export function CatalogImportWizard({
     setColumnMapping({ mappings: [] });
     reset();
   }, [reset]);
+
+  const handleCancelImport = useCallback(async () => {
+    if (!status?.jobId) return;
+    try {
+      await cancelImport(status.jobId);
+    } catch {
+      // Error is handled by the hook
+    } finally {
+      setShowCancelConfirm(false);
+    }
+  }, [status?.jobId, cancelImport]);
 
   const handleClose = useCallback(() => {
     // Don't allow closing if import is in progress
@@ -956,9 +975,15 @@ export function CatalogImportWizard({
         {activeStep === 3 && (
           <>
             {isImportInProgress && (
-              <Typography variant="body2" color="text.secondary">
-                Import in progress. Please wait...
-              </Typography>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => setShowCancelConfirm(true)}
+                disabled={isCancelling}
+                startIcon={isCancelling ? <CircularProgress size={16} /> : null}
+              >
+                {isCancelling ? 'Cancelling...' : 'Cancel Import'}
+              </Button>
             )}
             {(isImportCompleted || isImportFailed) && (
               <>
@@ -973,6 +998,30 @@ export function CatalogImportWizard({
           </>
         )}
       </DialogActions>
+
+      {/* Cancel Confirmation Dialog */}
+      <Dialog open={showCancelConfirm} onClose={() => setShowCancelConfirm(false)} maxWidth="xs">
+        <DialogTitle>Cancel Import?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to cancel this import? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowCancelConfirm(false)} disabled={isCancelling}>
+            Keep Running
+          </Button>
+          <Button
+            onClick={handleCancelImport}
+            color="error"
+            variant="contained"
+            disabled={isCancelling}
+            startIcon={isCancelling ? <CircularProgress size={16} /> : null}
+          >
+            {isCancelling ? 'Cancelling...' : 'Cancel Import'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Dialog>
   );
 }
