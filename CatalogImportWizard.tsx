@@ -105,6 +105,32 @@ export interface CatalogImportWizardProps {
 // Sub-Components
 // ============================================================================
 
+function formatDuration(sec: number): string {
+  if (sec < 60) return `${sec}s`;
+  const min = Math.floor(sec / 60);
+  const remSec = sec % 60;
+  if (min < 60) return `${min}m ${remSec}s`;
+  const hr = Math.floor(min / 60);
+  const remMin = min % 60;
+
+  return `${hr}h ${remMin}m`;
+}
+
+function getStageLabel(stage?: string): string {
+  switch (stage) {
+    case 'parsing':
+      return 'Parsing file';
+    case 'upserting':
+      return 'Importing to database';
+    case 'image_generation':
+      return 'Generating structure images';
+    case 'finalizing':
+      return 'Finalizing';
+    default:
+      return '';
+  }
+}
+
 function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
   const { state, progress, failureReason } = status;
 
@@ -139,10 +165,35 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
   };
 
   const getProgressPercent = () => {
+    if (status.progressPct != null && status.progressPct > 0) {
+      return status.progressPct;
+    }
     if (!progress || progress.total === 0) return 0;
 
     return Math.round((progress.processed / progress.total) * 100);
   };
+
+  const getElapsedAndEta = () => {
+    if (!progress?.startedAt) return null;
+
+    const startTime = new Date(progress.startedAt).getTime();
+    const now = progress.finishedAt ? new Date(progress.finishedAt).getTime() : Date.now();
+    const elapsedMs = now - startTime;
+    const elapsedSec = Math.floor(elapsedMs / 1000);
+    const elapsed = formatDuration(elapsedSec);
+
+    const pct = getProgressPercent();
+    let eta = '';
+    if (pct > 5 && pct < 100 && !progress.finishedAt) {
+      const remainingMs = (elapsedMs / pct) * (100 - pct);
+      eta = formatDuration(Math.floor(remainingMs / 1000));
+    }
+
+    return { elapsed, eta };
+  };
+
+  const progressPercent = getProgressPercent();
+  const stageLabel = getStageLabel(status.stage);
 
   return (
     <Box
@@ -169,17 +220,42 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
         </Box>
       </Box>
 
+      {stageLabel && state === 'active' && (
+        <Typography variant="body2" color="text.secondary">
+          {stageLabel}
+          {status.message ? ` \u2014 ${status.message}` : ''}
+        </Typography>
+      )}
+
       {progress && (
         <>
           <Box sx={{ width: '100%' }}>
             <LinearProgress
-              variant="determinate"
-              value={getProgressPercent()}
+              variant={
+                state === 'active' && progressPercent === 0 ? 'indeterminate' : 'determinate'
+              }
+              value={progressPercent}
               sx={{ height: 8, borderRadius: 1 }}
             />
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
-              {getProgressPercent()}% ({progress.processed} of {progress.total} rows processed)
+              {progressPercent}%
+              {progress.total > 0
+                ? ` (${progress.processed.toLocaleString()} of ${progress.total.toLocaleString()} rows)`
+                : progress.processed > 0
+                  ? ` (${progress.processed.toLocaleString()} rows processed)`
+                  : ''}
             </Typography>
+            {(() => {
+              const timing = getElapsedAndEta();
+              if (!timing) return null;
+
+              return (
+                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                  Elapsed: {timing.elapsed}
+                  {timing.eta && ` | Est. remaining: ${timing.eta}`}
+                </Typography>
+              );
+            })()}
           </Box>
 
           <Box
@@ -194,14 +270,20 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
               <Typography variant="body2" color="text.secondary">
                 Total
               </Typography>
-              <Typography variant="h6">{progress.total}</Typography>
+              <Typography variant="h6">
+                {progress.total > 0
+                  ? progress.total.toLocaleString()
+                  : progress.processed > 0
+                    ? `~${progress.processed.toLocaleString()}`
+                    : '...'}
+              </Typography>
             </Box>
             <Box>
               <Typography variant="body2" color="text.secondary">
                 Processed
               </Typography>
               <Typography variant="h6" color="primary.main">
-                {progress.processed}
+                {progress.processed.toLocaleString()}
               </Typography>
             </Box>
             <Box>
@@ -209,7 +291,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
                 Inserted
               </Typography>
               <Typography variant="h6" color="success.main">
-                {progress.inserted}
+                {progress.inserted.toLocaleString()}
               </Typography>
             </Box>
             <Box>
@@ -217,7 +299,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
                 Updated
               </Typography>
               <Typography variant="h6" color="info.main">
-                {progress.updated}
+                {progress.updated.toLocaleString()}
               </Typography>
             </Box>
             <Box>
@@ -225,7 +307,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
                 Errors
               </Typography>
               <Typography variant="h6" color="error.main">
-                {progress.errored}
+                {progress.errored.toLocaleString()}
               </Typography>
             </Box>
           </Box>
@@ -438,7 +520,6 @@ export function CatalogImportWizard({
         setActiveStep(2);
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Failed to preview headers:', err);
     } finally {
       setIsLoadingHeaders(false);
@@ -477,7 +558,6 @@ export function CatalogImportWizard({
           screeningMode === 'PLATED_KIT' ? defaultPlateId.trim() || undefined : undefined,
       });
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Failed to start import:', err);
     }
   }, [

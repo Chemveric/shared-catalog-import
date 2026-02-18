@@ -145,6 +145,12 @@ export interface CatalogImportStatus {
   progress?: CatalogImportProgress;
   errorsLocation?: string;
   failureReason?: string;
+  /** Backend-calculated progress percentage (0-100) */
+  progressPct?: number;
+  /** Current processing stage */
+  stage?: 'parsing' | 'upserting' | 'image_generation' | 'finalizing';
+  /** Human-readable progress message from backend */
+  message?: string;
 }
 
 // ============================================================================

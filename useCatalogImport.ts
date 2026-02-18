@@ -54,6 +54,38 @@ export interface StartCatalogImportParams {
 }
 
 /**
+ * Maps a flat API response (ImportStatusResponseDto) into the frontend
+ * CatalogImportStatus shape with a nested `progress` object.
+ */
+function mapApiResponseToStatus(data: Record<string, unknown>): CatalogImportStatus {
+  const valid = (data.valid as number) ?? 0;
+  const invalid = (data.invalid as number) ?? 0;
+  const total = (data.total as number) ?? 0;
+
+  return {
+    jobId: (data.jobId as string) ?? '',
+    organizationId: (data.organizationId as string) ?? '',
+    state: (data.state as CatalogImportStatus['state']) ?? 'queued',
+    progressPct: (data.progressPct as number) ?? 0,
+    stage: data.stage as CatalogImportStatus['stage'],
+    message: data.message as string | undefined,
+    failureReason: data.failureReason as string | undefined,
+    errorsLocation: data.errorsLocation as string | undefined,
+    progress: {
+      total,
+      processed: valid + invalid,
+      inserted:
+        ((data.upsertedProducts as number) ?? 0) + ((data.insertedCompounds as number) ?? 0),
+      updated: (data.upsertedPackages as number) ?? 0,
+      errored: invalid,
+      enqueuedAt: (data.enqueuedAt as string) ?? '',
+      startedAt: data.startedAt as string | undefined,
+      finishedAt: data.finishedAt as string | undefined,
+    },
+  };
+}
+
+/**
  * Hook for managing catalog import operations.
  *
  * @param organizationId - The organization ID for the import
@@ -92,9 +124,10 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
 
         const data = await response.json();
         console.log('[IMPORT_DEBUG] getStatus response data:', JSON.stringify(data, null, 2));
-        setStatus(data);
+        const mapped = mapApiResponseToStatus(data);
+        setStatus(mapped);
 
-        return data;
+        return mapped;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to get import status';
         console.error('[IMPORT_DEBUG] getStatus exception:', err);
