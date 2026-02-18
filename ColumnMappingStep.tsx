@@ -289,11 +289,15 @@ function autoDetectMapping(
   }
 
   // Inventory patterns
+  // Exclude SDS/COA columns that contain "available" (e.g. "sds_available_sds_", "coa_available_coa_")
+  const isDocAvailabilityColumn =
+    lower.includes('sds') || lower.includes('coa') || lower.includes('certificate');
   if (
-    lower.includes('inventory') ||
-    lower.includes('stock') ||
-    lower.includes('available') ||
-    lower.includes('qty')
+    !isDocAvailabilityColumn &&
+    (lower.includes('inventory') ||
+      lower.includes('stock') ||
+      lower.includes('available') ||
+      lower.includes('qty'))
   ) {
     return 'inventoryAvailable';
   }
