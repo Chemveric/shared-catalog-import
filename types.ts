@@ -81,7 +81,6 @@ export type ColumnMappingKind =
   | 'warehouseCountry'
   | 'warehouseCity'
   | 'warehouseLeadTimeDays'
-  | 'warehouseInStock'
   | 'warehouseStockQty'
   | 'warehousePrice'
   | 'ignore';
@@ -269,7 +268,6 @@ export const MAPPING_LABELS: Record<ColumnMappingKind, string> = {
   warehouseCountry: 'Warehouse Country',
   warehouseCity: 'Warehouse City',
   warehouseLeadTimeDays: 'Warehouse Lead Time (Days)',
-  warehouseInStock: 'Warehouse In Stock',
   warehouseStockQty: 'Warehouse Stock Qty',
   warehousePrice: 'Warehouse Price',
   // Other
@@ -284,7 +282,7 @@ export const BUILDING_BLOCK_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: 'Structure',
-    options: ['smiles', 'molfile'],
+    options: ['smiles'],
   },
   {
     group: 'Chemistry Descriptors',
@@ -306,7 +304,6 @@ export const BUILDING_BLOCK_OPTIONS: MappingOptionGroup[] = [
       'warehouseCountry',
       'warehouseCity',
       'warehouseLeadTimeDays',
-      'warehouseInStock',
       'warehouseStockQty',
       'warehousePrice',
     ],
@@ -329,7 +326,7 @@ export const SCREENING_COMPOUND_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: 'Structure',
-    options: ['smiles', 'molfile'],
+    options: ['smiles'],
   },
   {
     group: 'Library & Kit Metadata',

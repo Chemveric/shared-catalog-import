@@ -89,15 +89,6 @@ function autoDetectMapping(
       return 'warehouseLeadTimeDays';
     }
 
-    // Warehouse in stock
-    if (
-      lower === 'warehouse_in_stock' ||
-      lower === 'warehouseinstock' ||
-      lower === 'warehouse_instock'
-    ) {
-      return 'warehouseInStock';
-    }
-
     // Warehouse stock qty
     if (
       lower === 'warehouse_stock_qty' ||
@@ -599,7 +590,6 @@ export function validateMapping(
       'warehouseCountry',
       'warehouseCity',
       'warehouseLeadTimeDays',
-      'warehouseInStock',
       'warehouseStockQty',
       'warehousePrice',
     ];
