@@ -380,6 +380,11 @@ function autoDetectMapping(
     return "saltData";
   }
 
+  // Chiral purity patterns (must be checked before generic purity)
+  if (lower.includes('chiral') && lower.includes('purity')) {
+    return 'chiralPurity';
+  }
+
   // Purity patterns (including vendor-specific like "Quality", "Assay")
   if (
     lower.includes("purity") ||

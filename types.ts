@@ -71,6 +71,7 @@ export type ColumnMappingKind =
   | "controlType"
   | "batchId"
   | "purity"
+  | "chiralPurity"
   | "hazmat"
   // Product metadata
   | "countryOfOrigin"
@@ -238,6 +239,7 @@ export const MAPPING_LABELS: Record<ColumnMappingKind, string> = {
   molWeight: "Molecular Weight",
   saltData: "Salt Data",
   purity: "Purity",
+  chiralPurity: "Chiral Purity",
   // Supply & Handling
   concentration: "Concentration",
   volume: "Volume",
@@ -280,7 +282,7 @@ export const BUILDING_BLOCK_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: "Chemistry Descriptors",
-    options: ["molFormula", "molWeight", "saltData", "purity"],
+    options: ["molFormula", "molWeight", "saltData", "purity", "chiralPurity"],
   },
   {
     group: "Commercial",
@@ -351,7 +353,7 @@ export const SCREENING_COMPOUND_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: "PhysChem & Salt",
-    options: ["molFormula", "molWeight", "saltData", "purity"],
+    options: ["molFormula", "molWeight", "saltData", "purity", "chiralPurity"],
   },
   {
     group: "Supply & Handling",
