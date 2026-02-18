@@ -282,7 +282,7 @@ export const BUILDING_BLOCK_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: 'Structure',
-    options: ['smiles'],
+    options: ['smiles', 'molfile'],
   },
   {
     group: 'Chemistry Descriptors',
@@ -326,7 +326,7 @@ export const SCREENING_COMPOUND_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: 'Structure',
-    options: ['smiles'],
+    options: ['smiles', 'molfile'],
   },
   {
     group: 'Library & Kit Metadata',
