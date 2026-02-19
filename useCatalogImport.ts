@@ -38,6 +38,11 @@ export interface CatalogImportApiConfig {
   previewHeadersUrl: string;
   /** DELETE endpoint to cancel an import job (receives jobId as parameter) */
   cancelImportUrl?: (jobId: string) => string;
+  /**
+   * Whether to include organizationId in request bodies.
+   * Admin endpoints require it (default: true); supplier endpoints derive it from the session.
+   */
+  includeOrganizationId?: boolean;
 }
 
 /**
@@ -149,11 +154,14 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
         setIsStarting(true);
 
         const requestBody: Record<string, unknown> = {
-          organizationId,
           fileId: params.fileId,
           mode: params.mode,
           importKind: params.importKind || 'BUILDING_BLOCK',
         };
+
+        if (apiConfig.includeOrganizationId !== false) {
+          requestBody.organizationId = organizationId;
+        }
 
         // Add column mapping if provided
         if (params.columnMapping) {
@@ -250,16 +258,17 @@ export function useCatalogImport(organizationId: string, apiConfig: CatalogImpor
         console.log('[IMPORT_DEBUG] previewHeaders called for fileId:', fileId);
         console.log('[IMPORT_DEBUG] previewHeaders URL:', apiConfig.previewHeadersUrl);
         console.log('[IMPORT_DEBUG] previewHeaders organizationId:', organizationId);
+        const previewBody: Record<string, unknown> = { fileId };
+        if (apiConfig.includeOrganizationId !== false) {
+          previewBody.organizationId = organizationId;
+        }
         const response = await fetch(apiConfig.previewHeadersUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify({
-            fileId,
-            organizationId,
-          }),
+          body: JSON.stringify(previewBody),
         });
         console.log('[IMPORT_DEBUG] previewHeaders response status:', response.status);
 
