@@ -858,7 +858,12 @@ export function ColumnMappingStep({
       )}
 
       <TableContainer component={Paper} variant="outlined" sx={{ mb: 3 }}>
-        <Table size="small">
+        <Table size="small" sx={{ tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: '30%' }} />
+            <col style={{ width: '35%' }} />
+            <col style={{ width: '35%' }} />
+          </colgroup>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>File Column</TableCell>
@@ -869,7 +874,7 @@ export function ColumnMappingStep({
           <TableBody>
             {columns.map((col) => (
               <TableRow key={col.fileColumn}>
-                <TableCell sx={{ maxWidth: 200 }}>
+                <TableCell>
                   <Typography
                     variant="body2"
                     fontWeight="medium"
@@ -888,7 +893,6 @@ export function ColumnMappingStep({
                     variant="body2"
                     color="text.secondary"
                     sx={{
-                      maxWidth: 200,
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
