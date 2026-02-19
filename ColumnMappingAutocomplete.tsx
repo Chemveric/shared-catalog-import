@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import {
   Autocomplete,
   Box,
@@ -55,6 +55,8 @@ export default function ColumnMappingAutocomplete({
   disabled = false,
 }: ColumnMappingAutocompleteProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const activeCategoryRef = useRef<string | null>(null);
+  activeCategoryRef.current = activeCategory;
 
   const allOptions = useMemo(() => buildOptions(optionGroups), [optionGroups]);
   const categories = useMemo(
@@ -68,74 +70,90 @@ export default function ColumnMappingAutocomplete({
     [allOptions, value],
   );
 
+  // Force re-filter when activeCategory changes by including it in a key
+  const [filterKey, setFilterKey] = useState(0);
+
   /** Custom filter: search by label + kind, respect activeCategory chip. */
-  const filterOptions = (
-    options: MappingOption[],
-    state: FilterOptionsState<MappingOption>,
-  ): MappingOption[] => {
-    const query = state.inputValue.toLowerCase().trim();
+  const filterOptions = useCallback(
+    (options: MappingOption[], state: FilterOptionsState<MappingOption>): MappingOption[] => {
+      // filterKey is referenced to ensure React treats this as a new function when category changes
+      void filterKey;
+      const query = state.inputValue.toLowerCase().trim();
+      const cat = activeCategoryRef.current;
 
-    let filtered = options.filter((o) => {
-      if (o.kind === 'ignore') return false; // appended at the end always
-      const matchesCategory = !activeCategory || o.group === activeCategory;
-      if (!matchesCategory) return false;
-      if (!query) return true;
+      let filtered = options.filter((o) => {
+        if (o.kind === 'ignore') return false;
+        const matchesCategory = !cat || o.group === cat;
+        if (!matchesCategory) return false;
+        if (!query) return true;
+        return o.label.toLowerCase().includes(query) || o.kind.toLowerCase().includes(query);
+      });
 
-      return o.label.toLowerCase().includes(query) || o.kind.toLowerCase().includes(query);
-    });
+      filtered = [...filtered, IGNORE_OPTION];
+      return filtered;
+    },
+    [filterKey],
+  );
 
-    // Always append Ignore at the bottom
-    filtered = [...filtered, IGNORE_OPTION];
-
-    return filtered;
-  };
-
-  /** Custom Paper with category filter chips at the top. */
-  const CustomPaper = (props: React.HTMLAttributes<HTMLElement>) => (
-    <Paper {...props} elevation={8} sx={{ borderRadius: 2 }}>
-      {/* Category filter chips */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 0.5,
-          px: 1.5,
-          pt: 1.5,
-          pb: 0.5,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Chip
-          label="All"
-          size="small"
-          variant={activeCategory === null ? 'filled' : 'outlined'}
-          color={activeCategory === null ? 'primary' : 'default'}
+  /**
+   * Stable PaperComponent using useCallback so MUI never unmounts/remounts
+   * the dropdown when category chips are clicked.  The chip state is read
+   * from a ref so the Paper identity stays the same across renders.
+   */
+  const CustomPaper = useCallback(
+    (props: React.HTMLAttributes<HTMLElement>) => (
+      <Paper {...props} elevation={8} sx={{ borderRadius: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 0.5,
+            px: 1.5,
+            pt: 1.5,
+            pb: 0.5,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
           onMouseDown={(e) => {
+            // Prevent MUI ClickAwayListener from closing the dropdown
             e.preventDefault();
             e.stopPropagation();
-            setActiveCategory(null);
           }}
-          sx={{ fontSize: 12, cursor: 'pointer' }}
-        />
-        {categories.map((cat) => (
+        >
           <Chip
-            key={cat}
-            label={cat}
+            label="All"
             size="small"
-            variant={activeCategory === cat ? 'filled' : 'outlined'}
-            color={activeCategory === cat ? 'primary' : 'default'}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setActiveCategory((prev) => (prev === cat ? null : cat));
+            variant={activeCategoryRef.current === null ? 'filled' : 'outlined'}
+            color={activeCategoryRef.current === null ? 'primary' : 'default'}
+            onClick={() => {
+              setActiveCategory(null);
+              setFilterKey((k) => k + 1);
             }}
             sx={{ fontSize: 12, cursor: 'pointer' }}
           />
-        ))}
-      </Box>
-      {props.children}
-    </Paper>
+          {categories.map((cat) => (
+            <Chip
+              key={cat}
+              label={cat}
+              size="small"
+              variant={activeCategoryRef.current === cat ? 'filled' : 'outlined'}
+              color={activeCategoryRef.current === cat ? 'primary' : 'default'}
+              onClick={() => {
+                setActiveCategory((prev) => {
+                  const next = prev === cat ? null : cat;
+                  return next;
+                });
+                setFilterKey((k) => k + 1);
+              }}
+              sx={{ fontSize: 12, cursor: 'pointer' }}
+            />
+          ))}
+        </Box>
+        {props.children}
+      </Paper>
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [categories],
   );
 
   return (
