@@ -8,12 +8,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Select,
-  MenuItem,
-  FormControl,
   Typography,
   Alert,
-  ListSubheader,
 } from '@mui/material';
 import {
   CatalogImportKind,
@@ -22,10 +18,10 @@ import {
   HeaderPreviewColumn,
   ScreeningMode,
   ValidationResult,
-  MAPPING_LABELS,
   BUILDING_BLOCK_OPTIONS,
   SCREENING_COMPOUND_OPTIONS,
 } from './types';
+import ColumnMappingAutocomplete from './ColumnMappingAutocomplete';
 
 export interface ColumnMappingStepProps {
   columns: HeaderPreviewColumn[];
@@ -279,6 +275,16 @@ function autoDetectMapping(
     return 'unitPrice';
   }
 
+  // SDS Available patterns
+  if (lower.includes('sds') && (lower.includes('avail') || lower === 'sds')) {
+    return 'sdsAvailable';
+  }
+
+  // COA Available patterns
+  if (lower.includes('coa') && (lower.includes('avail') || lower === 'coa')) {
+    return 'coaAvailable';
+  }
+
   // Inventory patterns
   // Exclude SDS/COA columns that contain "available" (e.g. "sds_available_sds_", "coa_available_coa_")
   const isDocAvailabilityColumn =
@@ -384,6 +390,71 @@ function autoDetectMapping(
   // NOTE: Warehouse patterns for BUILDING_BLOCK are now handled at the TOP of this function
   // to ensure they are detected before generic inventory patterns (which would incorrectly
   // match warehouse_stock_qty due to "stock" and "qty" substrings).
+
+  // Vendor name patterns
+  if (
+    lower === 'vendor_name' ||
+    lower === 'vendorname' ||
+    lower === 'vendor' ||
+    lower === 'supplier'
+  ) {
+    return 'vendorName';
+  }
+
+  // Re-test / Expiry patterns
+  if (
+    lower.includes('retest') ||
+    lower.includes('re_test') ||
+    lower.includes('re-test') ||
+    lower.includes('expiry') ||
+    lower.includes('expiration')
+  ) {
+    return 'retestOrExpiry';
+  }
+
+  // Custom synthesis patterns
+  if (
+    lower.includes('custom_synth') ||
+    lower.includes('customsynth') ||
+    lower === 'custom synthesis'
+  ) {
+    return 'customSynthesis';
+  }
+
+  // Notes patterns
+  if (lower === 'notes' || lower === 'note' || lower === 'comments' || lower === 'remark') {
+    return 'notes';
+  }
+
+  // MOQ patterns
+  if (lower === 'moq' || lower.includes('min_order') || lower.includes('minimum_order')) {
+    return 'moq';
+  }
+
+  // HS Code patterns
+  if (lower === 'hs_code' || lower === 'hscode' || lower.includes('harmonized')) {
+    return 'hsCode';
+  }
+
+  // Shelf life patterns
+  if (lower === 'shelf_life' || lower === 'shelflife') {
+    return 'shelfLife';
+  }
+
+  // Appearance patterns
+  if (lower === 'appearance') {
+    return 'appearance';
+  }
+
+  // Solubility patterns
+  if (lower === 'solubility') {
+    return 'solubility';
+  }
+
+  // Physical form patterns
+  if (lower === 'physical_form' || lower === 'physicalform' || lower === 'form') {
+    return 'physicalForm';
+  }
 
   // Default to ignore for unrecognized columns
   return 'ignore';
@@ -721,45 +792,6 @@ export function ColumnMappingStep({
   const optionGroups =
     importKind === 'SCREENING_COMPOUND' ? SCREENING_COMPOUND_OPTIONS : BUILDING_BLOCK_OPTIONS;
 
-  // Render grouped select options
-  const renderSelectOptions = () => {
-    const items: React.ReactNode[] = [];
-
-    optionGroups.forEach((group, groupIndex) => {
-      // Add group header
-      items.push(
-        <ListSubheader
-          key={`header-${groupIndex}`}
-          sx={{ backgroundColor: 'background.paper', fontWeight: 'bold' }}
-        >
-          {group.group}
-        </ListSubheader>,
-      );
-
-      // Add options in group
-      group.options.forEach((option) => {
-        const isIgnore = option === 'ignore';
-        items.push(
-          <MenuItem
-            key={option}
-            value={option}
-            sx={{
-              pl: 3,
-              ...(isIgnore && {
-                color: 'error.main',
-                fontWeight: 'medium',
-              }),
-            }}
-          >
-            {MAPPING_LABELS[option]}
-          </MenuItem>,
-        );
-      });
-    });
-
-    return items;
-  };
-
   return (
     <Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -859,17 +891,12 @@ export function ColumnMappingStep({
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <FormControl size="small" sx={{ minWidth: 180 }}>
-                    <Select
-                      value={getMappingForColumn(col.fileColumn)}
-                      onChange={(e) =>
-                        handleMappingChange(col.fileColumn, e.target.value as ColumnMappingKind)
-                      }
-                      disabled={isLoading}
-                    >
-                      {renderSelectOptions()}
-                    </Select>
-                  </FormControl>
+                  <ColumnMappingAutocomplete
+                    value={getMappingForColumn(col.fileColumn)}
+                    onChange={(newMapTo) => handleMappingChange(col.fileColumn, newMapTo)}
+                    optionGroups={optionGroups}
+                    disabled={isLoading}
+                  />
                 </TableCell>
               </TableRow>
             ))}

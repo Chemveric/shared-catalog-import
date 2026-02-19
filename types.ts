@@ -32,27 +32,50 @@ export type PlateFormat = 'P96' | 'P384' | 'P1536';
  * Mirrors backend ColumnMappingKind.
  */
 export type ColumnMappingKind =
+  // Compound identifiers
   | 'catalogNumber'
   | 'cas'
   | 'inchiKey'
   | 'productName'
   | 'mdlNumber'
+  | 'compoundId'
+  // Structure
+  | 'smiles'
+  | 'mdl'
+  | 'molfile'
+  // Chemistry descriptors
+  | 'molFormula'
+  | 'molWeight'
+  | 'saltData'
+  | 'purity'
+  | 'chiralPurity'
+  // Commercial
   | 'packageSize'
   | 'unitPrice'
   | 'inventoryAvailable'
   | 'leadTime'
-  | 'molFormula'
-  | 'molWeight'
-  | 'smiles'
-  | 'mdl'
-  | 'molfile'
-  | 'saltData'
+  | 'moq'
+  // Product info
+  | 'vendorName'
+  | 'countryOfOrigin'
+  | 'storageConditions'
+  | 'appearance'
+  | 'solubility'
+  | 'shelfLife'
+  | 'physicalForm'
+  | 'notes'
+  // Quality & compliance
+  | 'sdsAvailable'
+  | 'coaAvailable'
+  | 'customSynthesis'
+  | 'retestOrExpiry'
+  | 'hsCode'
+  | 'hazmat'
   // Plate map fields (for compound library/kit imports)
   | 'plateId'
   | 'well'
   | 'row'
   | 'column'
-  | 'compoundId'
   // Library metadata
   | 'libraryName'
   | 'libraryId'
@@ -66,15 +89,9 @@ export type ColumnMappingKind =
   | 'concentration'
   | 'volume'
   | 'solvent'
-  | 'storageConditions'
   // Screening annotations
   | 'controlType'
   | 'batchId'
-  | 'purity'
-  | 'chiralPurity'
-  | 'hazmat'
-  // Product metadata
-  | 'countryOfOrigin'
   // Warehouse fields (one warehouse per row)
   | 'warehouseCode'
   | 'warehouseName'
@@ -255,6 +272,20 @@ export const MAPPING_LABELS: Record<ColumnMappingKind, string> = {
   unitPrice: 'Unit Price',
   inventoryAvailable: 'Inventory Available',
   leadTime: 'Lead Time',
+  moq: 'MOQ (Min. Order Qty)',
+  // Product Info
+  vendorName: 'Vendor Name',
+  appearance: 'Appearance',
+  solubility: 'Solubility',
+  shelfLife: 'Shelf Life',
+  physicalForm: 'Physical Form',
+  notes: 'Notes',
+  // Quality & Compliance
+  sdsAvailable: 'SDS Available (Y/N)',
+  coaAvailable: 'COA Available (Y/N)',
+  retestOrExpiry: 'Re-test Date / Expiry',
+  customSynthesis: 'Custom Synthesis (Y/N)',
+  hsCode: 'HS Code',
   // Screening Annotations
   controlType: 'Control Type',
   batchId: 'Batch ID',
@@ -285,16 +316,36 @@ export const BUILDING_BLOCK_OPTIONS: MappingOptionGroup[] = [
     options: ['smiles', 'molfile'],
   },
   {
-    group: 'Chemistry Descriptors',
+    group: 'Chemistry',
     options: ['molFormula', 'molWeight', 'saltData', 'purity', 'chiralPurity'],
   },
   {
     group: 'Commercial',
-    options: ['packageSize', 'unitPrice', 'inventoryAvailable', 'leadTime', 'hazmat'],
+    options: ['packageSize', 'unitPrice', 'inventoryAvailable', 'leadTime', 'moq'],
   },
   {
-    group: 'Product Metadata',
-    options: ['countryOfOrigin', 'storageConditions'],
+    group: 'Product Info',
+    options: [
+      'vendorName',
+      'countryOfOrigin',
+      'storageConditions',
+      'appearance',
+      'solubility',
+      'shelfLife',
+      'physicalForm',
+      'notes',
+    ],
+  },
+  {
+    group: 'Quality & Compliance',
+    options: [
+      'sdsAvailable',
+      'coaAvailable',
+      'customSynthesis',
+      'retestOrExpiry',
+      'hsCode',
+      'hazmat',
+    ],
   },
   {
     group: 'Warehouses',
@@ -355,7 +406,22 @@ export const SCREENING_COMPOUND_OPTIONS: MappingOptionGroup[] = [
   },
   {
     group: 'Commercial',
-    options: ['packageSize', 'unitPrice', 'inventoryAvailable', 'leadTime', 'hazmat'],
+    options: ['packageSize', 'unitPrice', 'inventoryAvailable', 'leadTime', 'moq'],
+  },
+  {
+    group: 'Product Info',
+    options: ['vendorName', 'appearance', 'solubility', 'shelfLife', 'physicalForm', 'notes'],
+  },
+  {
+    group: 'Quality & Compliance',
+    options: [
+      'sdsAvailable',
+      'coaAvailable',
+      'customSynthesis',
+      'retestOrExpiry',
+      'hsCode',
+      'hazmat',
+    ],
   },
   {
     group: 'Other',
