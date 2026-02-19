@@ -146,6 +146,8 @@ export interface CatalogImportProgress {
   total: number;
   processed: number;
   inserted: number;
+  /** Number of new unique compounds created (distinct from inserted products) */
+  insertedCompounds: number;
   updated: number;
   errored: number;
   enqueuedAt: string;

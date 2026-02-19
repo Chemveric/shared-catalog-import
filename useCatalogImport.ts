@@ -77,6 +77,7 @@ function mapApiResponseToStatus(data: Record<string, unknown>): CatalogImportSta
       total,
       processed: valid + invalid,
       inserted: (data.upsertedProducts as number) ?? 0,
+      insertedCompounds: (data.insertedCompounds as number) ?? 0,
       updated: (data.upsertedPackages as number) ?? 0,
       errored: invalid,
       enqueuedAt: (data.enqueuedAt as string) ?? '',
