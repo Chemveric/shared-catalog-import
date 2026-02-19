@@ -111,8 +111,12 @@ export default function ColumnMappingAutocomplete({
           size="small"
           variant={activeCategory === null ? 'filled' : 'outlined'}
           color={activeCategory === null ? 'primary' : 'default'}
-          onClick={() => setActiveCategory(null)}
-          sx={{ fontSize: 12 }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setActiveCategory(null);
+          }}
+          sx={{ fontSize: 12, cursor: 'pointer' }}
         />
         {categories.map((cat) => (
           <Chip
@@ -121,8 +125,12 @@ export default function ColumnMappingAutocomplete({
             size="small"
             variant={activeCategory === cat ? 'filled' : 'outlined'}
             color={activeCategory === cat ? 'primary' : 'default'}
-            onClick={() => setActiveCategory((prev) => (prev === cat ? null : cat))}
-            sx={{ fontSize: 12 }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveCategory((prev) => (prev === cat ? null : cat));
+            }}
+            sx={{ fontSize: 12, cursor: 'pointer' }}
           />
         ))}
       </Box>
