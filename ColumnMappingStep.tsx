@@ -259,20 +259,20 @@ function autoDetectMapping(
     return 'productName';
   }
 
-  // Package size patterns
+  // Price patterns (BEFORE package size — "unit_price_per_package_size" contains "package", "size", and "unit")
+  if (lower.includes('price') || lower.includes('cost') || lower.includes('usd')) {
+    return 'unitPrice';
+  }
+
+  // Package size patterns (after price to avoid "unit_price" matching "unit" or "package")
   if (
     lower.includes('package') ||
     lower.includes('size') ||
     lower.includes('quantity') ||
     lower.includes('amount') ||
-    lower.includes('unit')
+    (lower.includes('unit') && !lower.includes('price'))
   ) {
     return 'packageSize';
-  }
-
-  // Price patterns
-  if (lower.includes('price') || lower.includes('cost') || lower.includes('usd')) {
-    return 'unitPrice';
   }
 
   // SDS Available patterns
