@@ -869,8 +869,17 @@ export function ColumnMappingStep({
           <TableBody>
             {columns.map((col) => (
               <TableRow key={col.fileColumn}>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
+                <TableCell sx={{ maxWidth: 200 }}>
+                  <Typography
+                    variant="body2"
+                    fontWeight="medium"
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title={col.fileColumn}
+                  >
                     {col.fileColumn}
                   </Typography>
                 </TableCell>
