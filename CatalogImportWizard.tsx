@@ -670,7 +670,7 @@ export function CatalogImportWizard({
                 1. Upload Catalog File
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Upload a CSV, XLSX, XLS, or SDF file containing the catalog data.
+                Upload a CSV or SDF file containing the catalog data.
               </Typography>
               {fileUploader}
             </Box>
