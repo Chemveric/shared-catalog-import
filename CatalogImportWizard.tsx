@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogTitle,
@@ -116,36 +117,37 @@ function formatDuration(sec: number): string {
   return `${hr}h ${remMin}m`;
 }
 
-function getStageLabel(stage?: string): string {
+function getStageLabel(stage: string | undefined, t: (key: string) => string): string {
   switch (stage) {
     case 'parsing':
-      return 'Parsing file';
+      return t('catalogImport.stageParsing');
     case 'upserting':
-      return 'Importing to database';
+      return t('catalogImport.stageUpserting');
     case 'image_generation':
-      return 'Generating structure images';
+      return t('catalogImport.stageImageGeneration');
     case 'finalizing':
-      return 'Finalizing';
+      return t('catalogImport.stageFinalizing');
     default:
       return '';
   }
 }
 
 function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
+  const { t } = useTranslation('products');
   const { state, progress, failureReason } = status;
 
   const getStateLabel = () => {
     switch (state) {
       case 'queued':
-        return 'Queued';
+        return t('catalogImport.statusQueued');
       case 'active':
-        return 'Processing';
+        return t('catalogImport.statusProcessing');
       case 'completed':
-        return 'Completed';
+        return t('catalogImport.statusCompleted');
       case 'failed':
-        return 'Failed';
+        return t('catalogImport.statusFailed');
       default:
-        return 'Unknown';
+        return t('catalogImport.statusUnknown');
     }
   };
 
@@ -193,7 +195,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
   };
 
   const progressPercent = getProgressPercent();
-  const stageLabel = getStageLabel(status.stage);
+  const stageLabel = getStageLabel(status.stage, t);
 
   return (
     <Box
@@ -215,7 +217,9 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h6">Status: {getStateLabel()}</Typography>
+          <Typography variant="h6">
+            {t('catalogImport.status')}: {getStateLabel()}
+          </Typography>
           <Chip label={getStateLabel()} color={getStateColor()} size="small" />
         </Box>
       </Box>
@@ -240,9 +244,10 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
               {progressPercent}%
               {progress.total > 0
-                ? ` (${progress.processed.toLocaleString()} of ${progress.total.toLocaleString()} rows)`
+                ? // eslint-disable-next-line max-len
+                  ` (${t('catalogImport.rowsProcessed', { processed: progress.processed.toLocaleString(), total: progress.total.toLocaleString() })})`
                 : progress.processed > 0
-                  ? ` (${progress.processed.toLocaleString()} rows processed)`
+                  ? ` (${t('catalogImport.rowsProcessedNoTotal', { processed: progress.processed.toLocaleString() })})`
                   : ''}
             </Typography>
             {(() => {
@@ -251,8 +256,8 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
 
               return (
                 <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-                  Elapsed: {timing.elapsed}
-                  {timing.eta && ` | Est. remaining: ${timing.eta}`}
+                  {t('catalogImport.elapsed')}: {timing.elapsed}
+                  {timing.eta && ` | ${t('catalogImport.estRemaining')}: ${timing.eta}`}
                 </Typography>
               );
             })()}
@@ -268,7 +273,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
           >
             <Box>
               <Typography variant="body2" color="text.secondary">
-                Total
+                {t('catalogImport.total')}
               </Typography>
               <Typography variant="h6">
                 {progress.total > 0
@@ -280,7 +285,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
             </Box>
             <Box>
               <Typography variant="body2" color="text.secondary">
-                Processed
+                {t('catalogImport.processed')}
               </Typography>
               <Typography variant="h6" color="primary.main">
                 {progress.processed.toLocaleString()}
@@ -288,7 +293,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
             </Box>
             <Box>
               <Typography variant="body2" color="text.secondary">
-                Inserted
+                {t('catalogImport.inserted')}
               </Typography>
               <Typography variant="h6" color="success.main">
                 {progress.inserted.toLocaleString()}
@@ -296,7 +301,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
             </Box>
             <Box>
               <Typography variant="body2" color="text.secondary">
-                Updated
+                {t('catalogImport.updated')}
               </Typography>
               <Typography variant="h6" color="info.main">
                 {progress.updated.toLocaleString()}
@@ -304,7 +309,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
             </Box>
             <Box>
               <Typography variant="body2" color="text.secondary">
-                Errors
+                {t('catalogImport.errors')}
               </Typography>
               <Typography variant="h6" color="error.main">
                 {progress.errored.toLocaleString()}
@@ -315,11 +320,11 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
           {progress.startedAt && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2" color="text.secondary">
-                Started: {new Date(progress.startedAt).toLocaleString()}
+                {t('catalogImport.started')}: {new Date(progress.startedAt).toLocaleString()}
               </Typography>
               {progress.finishedAt && (
                 <Typography variant="body2" color="text.secondary">
-                  Finished: {new Date(progress.finishedAt).toLocaleString()}
+                  {t('catalogImport.finished')}: {new Date(progress.finishedAt).toLocaleString()}
                 </Typography>
               )}
             </Box>
@@ -337,7 +342,7 @@ function CatalogImportProgress({ status }: { status: CatalogImportStatus }) {
           }}
         >
           <Typography variant="body2" color="error.main">
-            <strong>Error:</strong> {failureReason}
+            <strong>{t('catalogImport.error')}:</strong> {failureReason}
           </Typography>
         </Box>
       )}
@@ -350,6 +355,7 @@ function CatalogImportErrors({
 }: {
   errors: Array<{ row: number; sku?: string; error: string }>;
 }) {
+  const { t } = useTranslation('products');
   if (errors.length === 0) return null;
 
   return (
@@ -363,20 +369,20 @@ function CatalogImportErrors({
       }}
     >
       <Typography variant="h6" gutterBottom color="error.main">
-        Import Errors ({errors.length})
+        {t('catalogImport.importErrors', { count: errors.length })}
       </Typography>
       <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 300 }}>
         <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>
-                <strong>Row</strong>
+                <strong>{t('catalogImport.row')}</strong>
               </TableCell>
               <TableCell>
-                <strong>SKU</strong>
+                <strong>{t('catalogImport.sku')}</strong>
               </TableCell>
               <TableCell>
-                <strong>Error</strong>
+                <strong>{t('catalogImport.error')}</strong>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -384,7 +390,7 @@ function CatalogImportErrors({
             {errors.map((err, index) => (
               <TableRow key={index}>
                 <TableCell>{err.row}</TableCell>
-                <TableCell>{err.sku || 'N/A'}</TableCell>
+                <TableCell>{err.sku || t('catalogImport.na')}</TableCell>
                 <TableCell>
                   <Typography variant="body2" color="error.main">
                     {err.error}
@@ -424,8 +430,6 @@ function deriveLibraryNameFromFilename(fileName: string): string {
 // Main Component
 // ============================================================================
 
-const steps = ['Upload File', 'Configure Import', 'Map Columns', 'Monitor Progress'];
-
 export function CatalogImportWizard({
   open,
   onClose,
@@ -437,6 +441,16 @@ export function CatalogImportWizard({
   uploadedFileId,
   uploadedFileName,
 }: CatalogImportWizardProps) {
+  const { t } = useTranslation('products');
+  const steps = useMemo(
+    () => [
+      t('catalogImport.steps.uploadFile'),
+      t('catalogImport.steps.configureImport'),
+      t('catalogImport.steps.mapColumns'),
+      t('catalogImport.steps.monitorProgress'),
+    ],
+    [t],
+  );
   const [activeStep, setActiveStep] = useState(0);
   const [fileId, setFileId] = useState<string | null>(uploadedFileId || null);
   const [fileName, setFileName] = useState<string | null>(uploadedFileName || null);
@@ -646,9 +660,9 @@ export function CatalogImportWizard({
     >
       <DialogTitle>
         <Box>
-          <Typography variant="h6">Import Catalog</Typography>
+          <Typography variant="h6">{t('catalogImport.title')}</Typography>
           <Typography variant="body2" color="text.secondary">
-            Organization: {organizationName}
+            {t('catalogImport.organization')}: {organizationName}
           </Typography>
         </Box>
       </DialogTitle>
@@ -667,10 +681,10 @@ export function CatalogImportWizard({
           {activeStep === 0 && (
             <Box>
               <Typography variant="h6" gutterBottom>
-                1. Upload Catalog File
+                1. {t('catalogImport.uploadCatalogFile')}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Upload a CSV or SDF file containing the catalog data.
+                {t('catalogImport.uploadCatalogFileDescription')}
               </Typography>
               {fileUploader}
             </Box>
@@ -680,16 +694,16 @@ export function CatalogImportWizard({
           {activeStep === 1 && fileId && !status && (
             <Box>
               <Typography variant="h6" gutterBottom>
-                2. Configure Import
+                2. {t('catalogImport.steps.configureImport')}
               </Typography>
 
               <Alert severity="info" sx={{ mb: 3 }}>
-                File uploaded: <strong>{fileName}</strong>
+                {t('catalogImport.fileUploaded')}: <strong>{fileName}</strong>
               </Alert>
 
               {/* Import Kind Selection */}
               <FormControl component="fieldset" sx={{ mb: 3, width: '100%' }}>
-                <FormLabel component="legend">What does this file contain?</FormLabel>
+                <FormLabel component="legend">{t('catalogImport.whatDoesFileContain')}</FormLabel>
                 <RadioGroup
                   value={importKind || ''}
                   onChange={(e) => {
@@ -707,12 +721,12 @@ export function CatalogImportWizard({
                   <FormControlLabel
                     value="BUILDING_BLOCK"
                     control={<Radio />}
-                    label="Only Building Blocks"
+                    label={t('catalogImport.onlyBuildingBlocks')}
                   />
                   <FormControlLabel
                     value="SCREENING_COMPOUND"
                     control={<Radio />}
-                    label="Only Screening Compounds"
+                    label={t('catalogImport.onlyScreeningCompounds')}
                   />
                 </RadioGroup>
               </FormControl>
@@ -730,7 +744,9 @@ export function CatalogImportWizard({
                 >
                   {/* Screening Mode Selection */}
                   <FormControl component="fieldset" sx={{ mb: 2, width: '100%' }}>
-                    <FormLabel component="legend">Screening Import Mode</FormLabel>
+                    <FormLabel component="legend">
+                      {t('catalogImport.screeningImportMode')}
+                    </FormLabel>
                     <RadioGroup
                       value={screeningMode || ''}
                       onChange={(e) => {
@@ -748,10 +764,11 @@ export function CatalogImportWizard({
                         control={<Radio />}
                         label={
                           <Box>
-                            <Typography variant="body1">Compound list (unplated)</Typography>
+                            <Typography variant="body1">
+                              {t('catalogImport.compoundListUnplated')}
+                            </Typography>
                             <Typography variant="body2" color="text.secondary">
-                              Screening compounds without plate location data. Plate fields are
-                              optional.
+                              {t('catalogImport.compoundListDescription')}
                             </Typography>
                           </Box>
                         }
@@ -762,11 +779,10 @@ export function CatalogImportWizard({
                         label={
                           <Box>
                             <Typography variant="body1">
-                              Screening library kit (pre-plated)
+                              {t('catalogImport.screeningLibraryKit')}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                              Pre-plated compounds with plate/well location data. Plate ID and Well
-                              position are required.
+                              {t('catalogImport.screeningLibraryKitDescription')}
                             </Typography>
                           </Box>
                         }
@@ -776,7 +792,7 @@ export function CatalogImportWizard({
 
                   {/* Library Name Input */}
                   <TextField
-                    label="Library Name (as provided by supplier)"
+                    label={t('catalogImport.libraryNameLabel')}
                     value={libraryName}
                     onChange={(e) => setLibraryName(e.target.value)}
                     fullWidth
@@ -784,9 +800,9 @@ export function CatalogImportWizard({
                     helperText={
                       libraryName.trim()
                         ? ''
-                        : `If left blank, will default to: "${
-                            fileName ? deriveLibraryNameFromFilename(fileName) : 'filename'
-                          }"`
+                        : t('catalogImport.libraryNameHelperText', {
+                            name: fileName ? deriveLibraryNameFromFilename(fileName) : 'filename',
+                          })
                     }
                   />
 
@@ -794,11 +810,13 @@ export function CatalogImportWizard({
                   {screeningMode === 'PLATED_KIT' && (
                     <Box sx={{ display: 'flex', gap: 2 }}>
                       <FormControl sx={{ minWidth: 150 }}>
-                        <InputLabel id="plate-format-label">Plate Format</InputLabel>
+                        <InputLabel id="plate-format-label">
+                          {t('catalogImport.plateFormat')}
+                        </InputLabel>
                         <Select
                           labelId="plate-format-label"
                           value={plateFormat}
-                          label="Plate Format"
+                          label={t('catalogImport.plateFormat')}
                           onChange={(e) => setPlateFormat(e.target.value as PlateFormat)}
                         >
                           {PLATE_FORMAT_OPTIONS.map((opt) => (
@@ -810,11 +828,11 @@ export function CatalogImportWizard({
                       </FormControl>
 
                       <TextField
-                        label="Default Plate ID"
+                        label={t('catalogImport.defaultPlateId')}
                         value={defaultPlateId}
                         onChange={(e) => setDefaultPlateId(e.target.value)}
                         sx={{ flex: 1 }}
-                        helperText="Used when no Plate ID column is mapped"
+                        helperText={t('catalogImport.defaultPlateIdHelperText')}
                       />
                     </Box>
                   )}
@@ -823,7 +841,7 @@ export function CatalogImportWizard({
 
               {/* Import Mode Selection */}
               <FormControl component="fieldset" sx={{ mb: 3 }}>
-                <FormLabel component="legend">Import Mode</FormLabel>
+                <FormLabel component="legend">{t('catalogImport.importMode')}</FormLabel>
                 <RadioGroup
                   value={importMode}
                   onChange={(e) => setImportMode(e.target.value as CatalogImportMode)}
@@ -833,10 +851,9 @@ export function CatalogImportWizard({
                     control={<Radio />}
                     label={
                       <Box>
-                        <Typography variant="body1">Merge</Typography>
+                        <Typography variant="body1">{t('catalogImport.merge')}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Add new products and update existing ones. Existing products not in the
-                          file will remain unchanged.
+                          {t('catalogImport.mergeDescription')}
                         </Typography>
                       </Box>
                     }
@@ -846,10 +863,9 @@ export function CatalogImportWizard({
                     control={<Radio />}
                     label={
                       <Box>
-                        <Typography variant="body1">Replace</Typography>
+                        <Typography variant="body1">{t('catalogImport.replace')}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Replace the entire catalog. Existing products not in the file will be
-                          removed.
+                          {t('catalogImport.replaceDescription')}
                         </Typography>
                       </Box>
                     }
@@ -869,19 +885,19 @@ export function CatalogImportWizard({
           {activeStep === 2 && importKind && (
             <Box>
               <Typography variant="h6" gutterBottom>
-                3. Map Columns
+                3. {t('catalogImport.steps.mapColumns')}
               </Typography>
 
               <Alert severity="info" sx={{ mb: 3 }}>
-                File: <strong>{fileName}</strong>
+                {t('catalogImport.file')}: <strong>{fileName}</strong>
                 {importKind === 'SCREENING_COMPOUND' && screeningMode && (
                   <>
                     {' '}
-                    | Mode:{' '}
+                    | {t('catalogImport.mode')}:{' '}
                     <strong>
                       {screeningMode === 'COMPOUND_LIST'
-                        ? 'Compound List (unplated)'
-                        : 'Screening Library Kit (pre-plated)'}
+                        ? t('catalogImport.compoundListMode')
+                        : t('catalogImport.screeningLibraryKitMode')}
                     </strong>
                   </>
                 )}
@@ -897,7 +913,7 @@ export function CatalogImportWizard({
                   }}
                 >
                   <CircularProgress />
-                  <Typography sx={{ ml: 2 }}>Analyzing file headers...</Typography>
+                  <Typography sx={{ ml: 2 }}>{t('catalogImport.analyzingHeaders')}</Typography>
                 </Box>
               ) : (
                 <ColumnMappingStep
@@ -916,7 +932,7 @@ export function CatalogImportWizard({
               {isStarting && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
                   <CircularProgress size={20} />
-                  <Typography>Starting import...</Typography>
+                  <Typography>{t('catalogImport.startingImport')}</Typography>
                 </Box>
               )}
             </Box>
@@ -926,7 +942,7 @@ export function CatalogImportWizard({
           {activeStep === 3 && status && (
             <Box>
               <Typography variant="h6" gutterBottom>
-                4. Import Progress
+                4. {t('catalogImport.importProgress')}
               </Typography>
 
               <CatalogImportProgress status={status} />
@@ -937,13 +953,13 @@ export function CatalogImportWizard({
 
               {isImportCompleted && (
                 <Alert severity="success" sx={{ mt: 3 }}>
-                  Catalog import completed successfully!
+                  {t('catalogImport.importCompletedSuccess')}
                 </Alert>
               )}
 
               {isImportFailed && (
                 <Alert severity="error" sx={{ mt: 3 }}>
-                  Catalog import failed. Please check the errors above and try again.
+                  {t('catalogImport.importFailedMessage')}
                 </Alert>
               )}
             </Box>
@@ -952,12 +968,12 @@ export function CatalogImportWizard({
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        {activeStep === 0 && <Button onClick={handleClose}>Cancel</Button>}
+        {activeStep === 0 && <Button onClick={handleClose}>{t('catalogImport.cancel')}</Button>}
 
         {activeStep === 1 && !status && (
           <>
             <Button onClick={handleReset} disabled={isLoadingHeaders}>
-              Back
+              {t('catalogImport.back')}
             </Button>
             <Button
               variant="contained"
@@ -965,7 +981,7 @@ export function CatalogImportWizard({
               disabled={!canProceedFromConfigure() || isLoadingHeaders}
               startIcon={isLoadingHeaders ? <CircularProgress size={16} /> : null}
             >
-              {isLoadingHeaders ? 'Loading...' : 'Next'}
+              {isLoadingHeaders ? t('catalogImport.loading') : t('catalogImport.next')}
             </Button>
           </>
         )}
@@ -982,16 +998,16 @@ export function CatalogImportWizard({
                 disabled={isCancelling}
                 startIcon={isCancelling ? <CircularProgress size={16} /> : null}
               >
-                {isCancelling ? 'Cancelling...' : 'Cancel Import'}
+                {isCancelling ? t('catalogImport.cancelling') : t('catalogImport.cancelImport')}
               </Button>
             )}
             {(isImportCompleted || isImportFailed) && (
               <>
                 <Button onClick={handleReset} variant="outlined">
-                  Import Another File
+                  {t('catalogImport.importAnotherFile')}
                 </Button>
                 <Button onClick={handleClose} variant="contained">
-                  Close
+                  {t('catalogImport.close')}
                 </Button>
               </>
             )}
@@ -1001,15 +1017,13 @@ export function CatalogImportWizard({
 
       {/* Cancel Confirmation Dialog */}
       <Dialog open={showCancelConfirm} onClose={() => setShowCancelConfirm(false)} maxWidth="xs">
-        <DialogTitle>Cancel Import?</DialogTitle>
+        <DialogTitle>{t('catalogImport.cancelImportConfirm')}</DialogTitle>
         <DialogContent>
-          <Typography>
-            Are you sure you want to cancel this import? This action cannot be undone.
-          </Typography>
+          <Typography>{t('catalogImport.cancelImportConfirmMessage')}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowCancelConfirm(false)} disabled={isCancelling}>
-            Keep Running
+            {t('catalogImport.keepRunning')}
           </Button>
           <Button
             onClick={handleCancelImport}
@@ -1018,7 +1032,7 @@ export function CatalogImportWizard({
             disabled={isCancelling}
             startIcon={isCancelling ? <CircularProgress size={16} /> : null}
           >
-            {isCancelling ? 'Cancelling...' : 'Cancel Import'}
+            {isCancelling ? t('catalogImport.cancelling') : t('catalogImport.cancelImport')}
           </Button>
         </DialogActions>
       </Dialog>
