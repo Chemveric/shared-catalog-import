@@ -86,10 +86,12 @@ export default function ColumnMappingAutocomplete({
         const matchesCategory = !cat || o.group === cat;
         if (!matchesCategory) return false;
         if (!query) return true;
+
         return o.label.toLowerCase().includes(query) || o.kind.toLowerCase().includes(query);
       });
 
       filtered = [...filtered, IGNORE_OPTION];
+
       return filtered;
     },
     [filterKey],
@@ -141,6 +143,7 @@ export default function ColumnMappingAutocomplete({
               onClick={() => {
                 setActiveCategory((prev) => {
                   const next = prev === cat ? null : cat;
+
                   return next;
                 });
                 setFilterKey((k) => k + 1);
@@ -152,7 +155,7 @@ export default function ColumnMappingAutocomplete({
         {props.children}
       </Paper>
     ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [categories],
   );
 
