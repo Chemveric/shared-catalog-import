@@ -251,12 +251,56 @@ function autoDetectMapping(
 
   // Product name patterns
   if (
-    lower.includes('name') ||
-    lower.includes('description') ||
-    lower.includes('title') ||
-    lower.includes('product')
+    lower === 'name' ||
+    lower === 'product_name' ||
+    lower === 'productname' ||
+    lower === 'chemical_name' ||
+    lower === 'chemicalname' ||
+    lower === 'compound_name' ||
+    lower === 'compoundname' ||
+    lower === 'title' ||
+    lower === 'product'
   ) {
     return 'productName';
+  }
+
+  if (
+    lower === 'target' ||
+    lower === 'target_name' ||
+    lower === 'biological_target' ||
+    lower === 'e3l'
+  ) {
+    return 'targetName';
+  }
+
+  if (lower === 'pathway' || lower === 'signaling_pathway') {
+    return 'pathway';
+  }
+
+  if (
+    lower === 'application' ||
+    lower === 'applications' ||
+    lower === 'intended_use' ||
+    lower === 'use_case' ||
+    lower === 'research_area'
+  ) {
+    return 'application';
+  }
+
+  if (lower === 'short_description' || lower === 'description' || lower === 'summary') {
+    return 'description';
+  }
+
+  if (lower === 'type_of_molecule' || lower === 'molecule_type') {
+    return 'moleculeType';
+  }
+
+  if (lower === 'alias' || lower === 'aliases' || lower === 'synonyms') {
+    return 'alias';
+  }
+
+  if (lower === 'mechanism_of_action' || lower === 'mechanism' || lower === 'moa') {
+    return 'mechanismOfAction';
   }
 
   // Price patterns (BEFORE package size — "unit_price_per_package_size" contains "package", "size", and "unit")
