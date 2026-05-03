@@ -81,6 +81,7 @@ export type ColumnMappingKind =
   | 'libraryId'
   | 'targetName'
   | 'pathway'
+  | 'application'
   | 'description'
   | 'moleculeType'
   | 'alias'
@@ -250,6 +251,7 @@ export const MAPPING_LABELS: Record<ColumnMappingKind, string> = {
   libraryId: 'Library ID',
   targetName: 'Target Name',
   pathway: 'Pathway',
+  application: 'Application / Use Case',
   description: 'Description',
   moleculeType: 'Molecule Type',
   alias: 'Alias',
@@ -322,6 +324,18 @@ export const BUILDING_BLOCK_OPTIONS: MappingOptionGroup[] = [
     options: ['molFormula', 'molWeight', 'saltData', 'purity', 'chiralPurity'],
   },
   {
+    group: 'Research Metadata',
+    options: [
+      'targetName',
+      'pathway',
+      'application',
+      'description',
+      'moleculeType',
+      'alias',
+      'mechanismOfAction',
+    ],
+  },
+  {
     group: 'Commercial',
     options: ['packageSize', 'unitPrice', 'inventoryAvailable', 'leadTime', 'moq'],
   },
@@ -388,6 +402,7 @@ export const SCREENING_COMPOUND_OPTIONS: MappingOptionGroup[] = [
       'libraryId',
       'targetName',
       'pathway',
+      'application',
       'description',
       'moleculeType',
       'alias',
