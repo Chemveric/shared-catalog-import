@@ -433,7 +433,6 @@ export function CatalogImportWizard({
   organizationName,
   apiConfig,
   fileUploader,
-  onFileUploaded,
   uploadedFileId,
   uploadedFileName,
 }: CatalogImportWizardProps) {
@@ -478,16 +477,6 @@ export function CatalogImportWizard({
       setFileName(uploadedFileName);
     }
   }, [uploadedFileId, uploadedFileName]);
-
-  // Handle file upload callback - this could be exposed via props for custom file upload handling
-  const _handleFileUploaded = useCallback(
-    (newFileId: string, newFileName: string) => {
-      setFileId(newFileId);
-      setFileName(newFileName);
-      onFileUploaded(newFileId, newFileName);
-    },
-    [onFileUploaded],
-  );
 
   // Advance to step 1 when file is uploaded
   useEffect(() => {
