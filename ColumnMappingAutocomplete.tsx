@@ -22,6 +22,8 @@ interface ColumnMappingAutocompleteProps {
   onChange: (value: ColumnMappingKind) => void;
   optionGroups: MappingOptionGroup[];
   disabled?: boolean;
+  /** Localize display text only; mapping kinds and group identities remain unchanged. */
+  translateLabel?: (text: string) => string;
 }
 
 /** Build a flat list of MappingOption from grouped option arrays. */
@@ -36,6 +38,8 @@ function buildOptions(groups: MappingOptionGroup[]): MappingOption[] {
 
   return options;
 }
+
+const identityLabel = (text: string) => text;
 
 const IGNORE_OPTION: MappingOption = {
   kind: 'ignore',
@@ -53,6 +57,7 @@ export default function ColumnMappingAutocomplete({
   onChange,
   optionGroups,
   disabled = false,
+  translateLabel = identityLabel,
 }: ColumnMappingAutocompleteProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const activeCategoryRef = useRef<string | null>(null);
@@ -87,14 +92,18 @@ export default function ColumnMappingAutocomplete({
         if (!matchesCategory) return false;
         if (!query) return true;
 
-        return o.label.toLowerCase().includes(query) || o.kind.toLowerCase().includes(query);
+        return (
+          translateLabel(o.label).toLowerCase().includes(query) ||
+          o.label.toLowerCase().includes(query) ||
+          o.kind.toLowerCase().includes(query)
+        );
       });
 
       filtered = [...filtered, IGNORE_OPTION];
 
       return filtered;
     },
-    [filterKey],
+    [filterKey, translateLabel],
   );
 
   /**
@@ -123,7 +132,7 @@ export default function ColumnMappingAutocomplete({
           }}
         >
           <Chip
-            label="All"
+            label={translateLabel('All')}
             size="small"
             variant={activeCategoryRef.current === null ? 'filled' : 'outlined'}
             color={activeCategoryRef.current === null ? 'primary' : 'default'}
@@ -136,7 +145,7 @@ export default function ColumnMappingAutocomplete({
           {categories.map((cat) => (
             <Chip
               key={cat}
-              label={cat}
+              label={translateLabel(cat)}
               size="small"
               variant={activeCategoryRef.current === cat ? 'filled' : 'outlined'}
               color={activeCategoryRef.current === cat ? 'primary' : 'default'}
@@ -156,7 +165,7 @@ export default function ColumnMappingAutocomplete({
       </Paper>
     ),
 
-    [categories],
+    [categories, translateLabel],
   );
 
   return (
@@ -166,8 +175,8 @@ export default function ColumnMappingAutocomplete({
       openOnFocus
       value={selectedOption}
       options={allOptions}
-      groupBy={(option) => option.group}
-      getOptionLabel={(option) => option.label}
+      groupBy={(option) => translateLabel(option.group)}
+      getOptionLabel={(option) => translateLabel(option.label)}
       isOptionEqualToValue={(option, val) => option.kind === val.kind}
       filterOptions={filterOptions}
       onChange={(_event, newValue) => {
@@ -191,14 +200,14 @@ export default function ColumnMappingAutocomplete({
               ...(option.kind === 'ignore' ? { color: '#d32f2f', fontWeight: 500 } : {}),
             }}
           >
-            {option.label}
+            {translateLabel(option.label)}
           </li>
         );
       }}
       renderInput={(params) => (
         <TextField
           {...params}
-          placeholder="Search..."
+          placeholder={translateLabel('Search...')}
           sx={{
             minWidth: 220,
             '& .MuiInputBase-root': {
